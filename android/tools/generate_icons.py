@@ -81,10 +81,10 @@ for density, size in {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhd
 adaptive = out / "mipmap-anydpi-v26"
 adaptive.mkdir(parents=True, exist_ok=True)
 (adaptive / "ic_launcher.xml").write_text(
-    '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\\n'
-    '    <background android:drawable="@android:color/transparent"/>\\n'
-    '    <foreground android:drawable="@drawable/flexo_logo"/>\\n'
-    '</adaptive-icon>\\n',
+    '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+    '    <background android:drawable="@android:color/transparent"/>\n'
+    '    <foreground android:drawable="@drawable/flexo_logo"/>\n'
+    '</adaptive-icon>\n',
     encoding="utf-8",
 )
 
