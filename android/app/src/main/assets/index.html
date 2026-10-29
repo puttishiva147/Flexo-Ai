@@ -285,7 +285,7 @@ var S={chats:[],kb:[],cfg:{useKb:true,saveHist:true,start:""},cur:null};
 try{var raw=localStorage.getItem("flexo_v1");if(raw){var p=JSON.parse(raw);for(var k in p)S[k]=p[k]}}catch(e){}
 S.cur=null;var busy=false,t0=0,ab=null,cur="chat",$=function(i){return document.getElementById(i)};
 function E(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
-function save(){try{localStorage.setItem("flexo_v1",JSON.stringify({chats:S.cfg.saveHist?S.chats:[],kb:S.kb,cfg:S.cfg},function(k,v){return k=="img"?undefined:v}));return true}catch(e){return false}}
+function save(){try{localStorage.setItem("flexo_v1",JSON.stringify({chats:S.cfg.saveHist?S.chats:[],kb:S.kb,cfg:S.cfg},function(k,v){if(k=="img")return undefined;if(k=="t"&&typeof v=="string"&&v.indexOf("data:image/")==0)return undefined;return v}));return true}catch(e){return false}}
 function chat(){return S.chats.filter(function(c){return c.id==S.cur})[0]}
 function go(id){cur=id;document.querySelectorAll(".s").forEach(function(e){e.classList.toggle("on",e.id==id)});
 document.querySelectorAll(".nav button,.tab button").forEach(function(b){b.classList.toggle("on",b.dataset.id==id)});
@@ -331,7 +331,7 @@ if(!ch.length){say(skip?"Not enough storage on this device for this file.":"I co
 S.kb=S.kb.filter(function(k){return k.src!=IM}).concat([{name:IM+" history ("+used+(conv.length?" chats":" file")+")",src:IM,ch:ch}]);
 if(!save()){S.kb=prev;say("Not enough storage on this device. Try a smaller export.");return}
 rpv();say("Imported "+used+(conv.length?" chats":" file")+(skip?" ("+skip+" skipped, storage is limited)":"")+". Flexo can use them offline now.")}
-catch(er){say(er.message=="ziplib"?"ZIP support could not load. Connect to the internet, reopen Flexo, and try again—or unzip the export and select conversations.json.":"Import failed: "+(er&&er.message?er.message:"unsupported file").slice(0,120)+". Try a JSON export or a TXT/MD file.")}};
+catch(er){say(er.message=="ziplib"?"ZIP support could not load locally. Reinstall the latest Flexo build or unzip the export and select conversations.json.":"Import failed: "+(er&&er.message?er.message:"unsupported file").slice(0,120)+". Try a JSON export or a TXT/MD file.")}};
 $("ia").onclick=function(){go("settings");var p=$("pv");if(p)p.scrollIntoView()};
 function words(q){return q.toLowerCase().split(/[^a-z0-9\u0900-\u097f]+/).filter(function(w){return w.length>2})}
 function retrieve(q){var w=words(q),r=[];if(!w.length)return r;S.kb.forEach(function(f){f.ch.forEach(function(c){var l=c.toLowerCase(),s=0;w.forEach(function(x){if(l.indexOf(x)>-1)s++});if(s>0)r.push({s:s,n:f.name,c:c})})});
