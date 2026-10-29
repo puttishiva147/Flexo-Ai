@@ -310,7 +310,7 @@ if(!ch.length){say(skip?"Not enough storage on this device for this file.":"I co
 S.kb=S.kb.filter(function(k){return k.src!=IM}).concat([{name:IM+" history ("+used+(conv.length?" chats":" file")+")",src:IM,ch:ch}]);
 if(!save()){S.kb=prev;say("Not enough storage on this device. Try a smaller export.");return}
 rpv();say("Imported "+used+(conv.length?" chats":" file")+(skip?" ("+skip+" skipped, storage is limited)":"")+". Flexo can use them offline now.")}
-catch(er){say(er.message=="nozip"?"Zip support didn’t load. Unzip the file and import conversations.json instead.":"I couldn’t read this file. Try the export file again.")}};
+catch(er){say(er.message=="ziplib"?"ZIP support could not load. Connect to the internet, reopen Flexo, and try again—or import conversations.json.":"I couldn’t read this file. Try the export file again.")}};
 $("ia").onclick=function(){go("settings");var p=$("pv");if(p)p.scrollIntoView()};
 function words(q){return q.toLowerCase().split(/[^a-z0-9\u0900-\u097f]+/).filter(function(w){return w.length>2})}
 function retrieve(q){var w=words(q),r=[];if(!w.length)return r;S.kb.forEach(function(f){f.ch.forEach(function(c){var l=c.toLowerCase(),s=0;w.forEach(function(x){if(l.indexOf(x)>-1)s++});if(s>0)r.push({s:s,n:f.name,c:c})})});
