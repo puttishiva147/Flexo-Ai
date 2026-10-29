@@ -60,7 +60,7 @@ while queue:
         queue.append((x, y + 1))
 
 # Crop transparent margins so the symbol fills its icon area consistently.
-bbox = im.getbbox()
+bbox = im.getchannel("A").getbbox()
 if bbox is None:
     raise SystemExit("Logo became fully transparent; refusing to generate a broken icon")
 im = im.crop(bbox)
