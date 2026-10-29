@@ -301,7 +301,7 @@ function ctext(c){var s="Conversation: "+c.title+(c.date?" ("+c.date+")":"")+"\n
 $("imf").onchange=async function(e){var f=e.target.files[0];e.target.value="";if(!f)return;function say(x){var s=$("ims");if(s)s.textContent=x}
 say("Reading your file…");var prev=S.kb;
 try{var conv=[],plain=[],zip=/\.zip$/i.test(f.name);
-if(zip){if(!window.JSZip)throw new Error("nozip");var z=await JSZip.loadAsync(f),ns=Object.keys(z.files).filter(function(n){return!z.files[n].dir&&/\.json$/i.test(n)});for(var i=0;i<ns.length;i++){var r1=parseAI(await z.files[ns[i]].async("string"));if(r1)conv=conv.concat(r1)}}
+if(zip){if(!window.JSZip)throw new Error("ziplib");var z=await JSZip.loadAsync(f),ns=Object.keys(z.files).filter(function(n){return!z.files[n].dir&&/\.json$/i.test(n)});for(var i=0;i<ns.length;i++){var r1=parseAI(await z.files[ns[i]].async("string"));if(r1)conv=conv.concat(r1)}}
 else{var tx=await f.text();if(/\.html?$/i.test(f.name))tx=tx.replace(/<[^>]+>/g," ").replace(/\s+/g," ");var r2=/\.json$/i.test(f.name)?parseAI(tx):null;if(r2)conv=r2;else plain.push(tx)}
 var cap=Math.max(0,3000000-JSON.stringify({chats:S.chats,kb:S.kb}).length),tot=0,used=0,skip=0,ch=[];
 conv.forEach(function(c){if(!c.msgs.length)return;var s=ctext(c);if(tot+s.length>cap){skip++;return}tot+=s.length;used++;chunk(s).forEach(function(p,k){ch.push(k?"["+c.title+"] "+p:p)})});
