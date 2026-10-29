@@ -71,10 +71,13 @@ class QuickAiOverlayService : Service() {
 
     private fun showBubble() {
         if (bubble != null || !Settings.canDrawOverlays(this)) return
-        val b = TextView(this).apply {
-            text = "F"; textSize = 22f; typeface = Typeface.DEFAULT_BOLD; gravity = Gravity.CENTER
-            setTextColor(Color.rgb(15, 13, 11)); background = bg(Color.rgb(227, 203, 166), 100f)
-            elevation = 12f; contentDescription = "Open Flexo Quick AI"
+        val b = ImageView(this).apply {
+            setImageResource(R.drawable.flexo_logo)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setPadding(dp(4), dp(4), dp(4), dp(4))
+            background = bg(Color.TRANSPARENT, 100f)
+            elevation = 12f
+            contentDescription = "Open Flexo Quick AI"
         }
         val p = lp().apply { width = dp(54); height = dp(54); flags = flags or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL }
         b.setOnTouchListener(object : View.OnTouchListener {
