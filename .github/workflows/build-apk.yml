@@ -1,4 +1,4 @@
-name: Build Flexo AI APK
+name: Build Flexo AI APK # Local-only build with no network permission
 
 on:
   push:
