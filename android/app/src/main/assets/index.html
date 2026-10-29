@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flexo AI</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0b0c;color:#f5f5f5;font:16px system-ui;padding:22px}
+.brand{color:#d9bfa3;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+h1{font-size:28px;margin:12px 0}p{color:#aaa}textarea{width:100%;min-height:130px;background:#171719;border:1px solid #333;border-radius:14px;padding:14px;color:white;font:inherit}
+button{margin-top:12px;padding:13px 18px;background:#d9bfa3;color:#171311;border:0;border-radius:12px;font-weight:700}
+#answer{white-space:pre-wrap;background:#171719;border-radius:14px;padding:14px;margin-top:18px;min-height:70px}
+</style>
+<div class="brand">Flexo AI</div><h1>Quick AI</h1><p>Ask a question or paste text to get started. Connect a hosted AI backend to enable generated answers.</p>
+<textarea id="q" placeholder="Ask Flexo anything…"></textarea><button onclick="ask()">Prepare question</button><div id="answer">Your question will appear here.</div>
+<script>function ask(){const q=document.getElementById('q').value.trim();document.getElementById('answer').textContent=q?('Question prepared:\n\n'+q+'\n\nAI responses require a configured backend endpoint and API key.'): 'Type a question first.'}</script>
