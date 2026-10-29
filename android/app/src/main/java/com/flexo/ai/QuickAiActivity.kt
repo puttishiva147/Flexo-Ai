@@ -37,14 +37,14 @@ class QuickAiActivity : Activity() {
 
     inner class QuickAiBridge {
         @JavascriptInterface
-        fun getApiEndpoint(): String = prefs.getString("api_endpoint", "") ?: ""
+        fun getApiEndpoint(): String = prefs.getString("api_endpoint", "https://flexo-ai-quick-backend.vercel.app/api/quick-ai") ?: "https://flexo-ai-quick-backend.vercel.app/api/quick-ai"
 
         @JavascriptInterface
         fun configureBackend() {
             runOnUiThread {
                 val input = EditText(this@QuickAiActivity).apply {
                     hint = "https://your-deployment.example/api/quick-ai"
-                    setText(prefs.getString("api_endpoint", "") ?: "")
+                    setText(prefs.getString("api_endpoint", "https://flexo-ai-quick-backend.vercel.app/api/quick-ai") ?: "https://flexo-ai-quick-backend.vercel.app/api/quick-ai")
                     setSingleLine(true)
                     setPadding(36, 24, 36, 24)
                 }
