@@ -8,6 +8,10 @@ on:
       - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
+concurrency:
+  group: flexo-apk-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
