@@ -25,7 +25,8 @@ class QuickAiOverlayService : Service() {
     private var panelParams: WindowManager.LayoutParams? = null
     private val worker = Executors.newSingleThreadExecutor()
     private val prefs by lazy { getSharedPreferences("flexo_quick_ai", MODE_PRIVATE) }
-    private val history = JSONArray()
+    private var history = JSONArray()
+    private var lastAnswer = ""
     private val main = Handler(Looper.getMainLooper())
     private var busy = false
 
@@ -109,7 +110,25 @@ class QuickAiOverlayService : Service() {
         val input=EditText(this).apply { hint="Ask Flexo…"; setTextColor(Color.WHITE); setHintTextColor(Color.LTGRAY); setSingleLine(false); maxLines=3; background=bg(Color.rgb(35,33,31),dp(18).toFloat()); setPadding(dp(12),dp(8),dp(12),dp(8)) }
         val send=Button(this).apply { text="Send"; isAllCaps=false; setOnClickListener { val q=input.text.toString().trim(); if(q.isNotEmpty()&&!busy){input.setText("");sendMessage(q,msgs,scroll,this@apply)} } }
         inputRow.addView(input,LinearLayout.LayoutParams(0,dp(52),1f));inputRow.addView(send);root.addView(inputRow)
-        val configure=TextView(this).apply { text="Settings · Copy response in chat"; textSize=12f; setTextColor(Color.rgb(227,203,166)); setPadding(0,dp(8),0,0); setOnClickListener{startActivity(Intent(this@QuickAiOverlayService,QuickAiSettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))} }
+        val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        val copy = Button(this).apply {
+            text = "Copy last answer"; isAllCaps = false
+            setOnClickListener {
+                if (lastAnswer.isBlank()) Toast.makeText(this@QuickAiOverlayService, "No AI response to copy yet", Toast.LENGTH_SHORT).show()
+                else {
+                    val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Flexo AI response", lastAnswer))
+                    Toast.makeText(this@QuickAiOverlayService, "Response copied", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        val clear = Button(this).apply {
+            text = "Clear"; isAllCaps = false
+            setOnClickListener { history = JSONArray(); lastAnswer = ""; msgs.text = "Conversation cleared. What can I help with?" }
+        }
+        actions.addView(copy, LinearLayout.LayoutParams(0, dp(44), 1f)); actions.addView(clear)
+        root.addView(actions)
+        val configure=TextView(this).apply { text="Quick AI Settings"; textSize=12f; setTextColor(Color.rgb(227,203,166)); setPadding(0,dp(8),0,0); setOnClickListener{startActivity(Intent(this@QuickAiOverlayService,QuickAiSettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))} }
         root.addView(configure)
         val p=lp().apply { width=dp(350).coerceAtMost(resources.displayMetrics.widthPixels-dp(20)); height=WindowManager.LayoutParams.WRAP_CONTENT; flags=WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN; gravity=Gravity.CENTER }
         try { wm.addView(root,p); panel=root; panelParams=p; input.requestFocus(); input.postDelayed({ (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(input,InputMethodManager.SHOW_IMPLICIT) },250) } catch(_:Exception) { panel=null }
@@ -133,6 +152,7 @@ class QuickAiOverlayService : Service() {
                 if(code !in 200..299) throw Exception(data.optString("error","Request failed ($code)"))
                 val answer=data.optString("text","").trim();if(answer.isEmpty())throw Exception("Empty response from AI provider")
                 history.put(JSONObject().put("role","assistant").put("content",answer))
+                lastAnswer = answer
                 main.post { msgs.text=msgs.text.toString().replace("Flexo: Thinking…","Flexo: $answer");scroll.post{scroll.fullScroll(View.FOCUS_DOWN)} }
                 conn.disconnect()
             } catch(e:Exception) { main.post { msgs.text=msgs.text.toString().replace("Flexo: Thinking…","Flexo: Could not get an answer. "+(e.message ?: "Check connection."));scroll.post{scroll.fullScroll(View.FOCUS_DOWN)} } }
