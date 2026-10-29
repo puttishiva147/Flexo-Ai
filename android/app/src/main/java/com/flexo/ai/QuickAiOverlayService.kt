@@ -135,7 +135,7 @@ class QuickAiOverlayService : Service() {
     }
 
     private fun sendMessage(q:String, msgs:TextView, scroll:ScrollView, send:Button) {
-        val endpoint=prefs.getString("api_endpoint","") ?: ""
+        val endpoint=prefs.getString("api_endpoint","https://flexo-ai-quick-backend.vercel.app/api/quick-ai") ?: "https://flexo-ai-quick-backend.vercel.app/api/quick-ai"
         if(!endpoint.startsWith("https://") || !endpoint.endsWith("/api/quick-ai")) { msgs.text=msgs.text.toString()+"\n\nYou: $q\nFlexo: Connect an HTTPS Quick AI backend in Settings first."; return }
         busy=true; send.isEnabled=false; msgs.text=msgs.text.toString()+"\n\nYou: $q\nFlexo: Thinking…"; scroll.post{scroll.fullScroll(View.FOCUS_DOWN)}
         worker.execute {
