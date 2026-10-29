@@ -20,7 +20,7 @@ im = original.copy()
 px = im.load()
 w, h = im.size
 corners = [px[0, 0], px[w - 1, 0], px[0, h - 1], px[w - 1, h - 1]]
-bg = tuple(sorted(c[i] for c in corners)[1] if False else sum(c[i] for c in corners) // 4 for i in range(3))
+bg = tuple(sum(c[i] for c in corners) // 4 for i in range(3))
 
 # Remove only neutral, grey background pixels connected to the outer edge.
 # Do not run a global colour-removal pass: that can erase the logo's white/cream details.
@@ -67,12 +67,11 @@ im = im.crop(bbox)
 
 out = ROOT / "app/src/main/res"
 (out / "drawable-nodpi").mkdir(parents=True, exist_ok=True)
-im.save(out / "drawable-nodpi/flexo_logo.png", optimize=True)
-
 # Keep the symbol centered, with safe padding for Android's launcher masks.
 canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
 im.thumbnail((410, 410), Image.Resampling.LANCZOS)
 canvas.alpha_composite(im, ((512 - im.width) // 2, (512 - im.height) // 2))
+canvas.save(out / "drawable-nodpi/flexo_logo.png", optimize=True)
 
 for density, size in {"mdpi": 48, "hdpi": 72, "xhdpi": 96, "xxhdpi": 144, "xxxhdpi": 192}.items():
     folder = out / ("mipmap-" + density)
