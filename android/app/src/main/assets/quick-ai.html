@@ -72,7 +72,8 @@ const root=$('#app'),lg=$('#lg'),pn=$('#pn'),th=$('#th'),q=$('#q'),fw=$('#fw'),t
 const SYS='You are Flexo Quick AI, a fast assistant in a small floating panel on a phone. Answer concisely and clearly. Only claim to see screen content or images when the user explicitly shares them.';
 const INS={Explain:'Explain this clearly and briefly.',Summarize:'Summarize this in a few short points.',Translate:'Translate this to English (if it is already English, translate it to Hindi).'};
 let isOpen=false,hist=[],ctx=null,busy=false,pend=null,tm;
-const API_ENDPOINT = (window.FLEXO_API_ENDPOINT || localStorage.getItem('flexo_api_endpoint') || (location.protocol!=='file:' ? location.origin+'/api/quick-ai' : '')).trim();
+let API_ENDPOINT = ((window.FlexoNative && FlexoNative.getApiEndpoint()) || window.FLEXO_API_ENDPOINT || localStorage.getItem('flexo_api_endpoint') || (location.protocol!=='file:' ? location.origin+'/api/quick-ai' : '')).trim();
+window.setFlexoApiEndpoint = function(url){ API_ENDPOINT=(url||'').trim(); if(API_ENDPOINT) toast('Quick AI backend connected. Ask a question to test it.'); };
 function toast(t){tt.textContent=t;tt.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>tt.classList.remove('on'),3600)}
 function place(){const px=pn.offsetLeft,py=pn.offsetTop;lg.style.setProperty('--t','translate('+(px+14-lg.offsetLeft)+'px,'+(py+17-lg.offsetTop)+'px) scale(1.1)');pn.style.transformOrigin=(lg.offsetLeft+20-px)+'px '+(lg.offsetTop+13-py)+'px'}
 function setOpen(v){isOpen=v;place();root.classList.toggle('open',v);if(v)setTimeout(()=>q.focus({preventScroll:true}),500);else q.blur()}
@@ -83,7 +84,7 @@ function add(c,t){const d=document.createElement('div');d.className='m '+c;d.tex
 function pill(){const p=$('#pill');if(ctx){$('#pl').textContent=ctx.img?'Screenshot attached':'Using text you shared';p.classList.add('on')}else p.classList.remove('on')}
 async function ask(text,shown){
  if(busy||!text.trim())return;
- if(!API_ENDPOINT){toast('AI backend is not configured yet. The app needs its hosted API endpoint.');return}
+ if(!API_ENDPOINT){toast('Connect the hosted AI backend first.');if(window.FlexoNative&&FlexoNative.configureBackend)FlexoNative.configureBackend();return}
  busy=true;$('#sd').disabled=true;add('u',shown||text);const a=add('a','Thinking…');a.classList.add('wait');
  const userMessage={role:'user',content:text};hist.push(userMessage);
  try{
