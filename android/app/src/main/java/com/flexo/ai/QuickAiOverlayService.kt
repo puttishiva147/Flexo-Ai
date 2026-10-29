@@ -33,7 +33,7 @@ class QuickAiOverlayService : Service() {
         super.onCreate()
         wm = getSystemService(WINDOW_SERVICE) as WindowManager
         startForeground(NOTIFICATION_ID, notification())
-        if (Settings.canDrawOverlays(this) && prefs.getBoolean("enabled", false)) showBubble()
+        if (Settings.canDrawOverlays(this) && prefs.getBoolean("enabled", false) && prefs.getBoolean("floating", true)) showBubble()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -41,7 +41,7 @@ class QuickAiOverlayService : Service() {
             ACTION_SHOW -> { if (Settings.canDrawOverlays(this)) showPanel() }
             ACTION_HIDE -> hidePanel()
             ACTION_STOP -> { prefs.edit().putBoolean("enabled", false).apply(); stopSelf() }
-            else -> if (Settings.canDrawOverlays(this) && prefs.getBoolean("enabled", false)) showBubble()
+            else -> if (Settings.canDrawOverlays(this) && prefs.getBoolean("enabled", false) && prefs.getBoolean("floating", true)) showBubble()
         }
         return START_STICKY
     }
