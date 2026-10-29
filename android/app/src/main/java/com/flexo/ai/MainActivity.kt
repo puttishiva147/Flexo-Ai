@@ -31,6 +31,8 @@ class MainActivity : Activity() {
                     "b.textContent='Quick AI';b.setAttribute('aria-label','Open Flexo Quick AI');" +
                     "b.style.cssText='position:fixed;z-index:99999;right:14px;bottom:calc(88px + env(safe-area-inset-bottom,0px));border:1px solid #514633;border-radius:22px;padding:9px 13px;background:#d9bfa3;color:#151311;font:600 13px system-ui;box-shadow:0 4px 14px #0007';" +
                     "b.onclick=function(){FlexoNative.openQuickAI()};document.body.appendChild(b);" +
+                    "function vis(){var settings=document.getElementById('settings');b.style.display=settings&&settings.classList.contains('on')?'none':'block'};" +
+                    "vis();document.querySelectorAll('.s').forEach(function(s){new MutationObserver(vis).observe(s,{attributes:true,attributeFilter:['class']})});" +
                     "})();",
                     null
                 )
