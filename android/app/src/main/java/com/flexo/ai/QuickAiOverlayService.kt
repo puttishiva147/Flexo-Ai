@@ -155,7 +155,13 @@ class QuickAiOverlayService : Service() {
                 lastAnswer = answer
                 main.post { msgs.text=msgs.text.toString().replace("Flexo: Thinking…","Flexo: $answer");scroll.post{scroll.fullScroll(View.FOCUS_DOWN)} }
                 conn.disconnect()
-            } catch(e:Exception) { main.post { msgs.text=msgs.text.toString().replace("Flexo: Thinking…","Flexo: Could not get an answer. "+(e.message ?: "Check connection."));scroll.post{scroll.fullScroll(View.FOCUS_DOWN)} } }
+            } catch(e:Exception) {
+                // Roll back the unmatched user turn so a failed request does not pollute later context.
+                if (history.length() > 0 && history.optJSONObject(history.length() - 1)?.optString("role") == "user") {
+                    history.remove(history.length() - 1)
+                }
+                main.post { msgs.text=msgs.text.toString().replace("Flexo: Thinking…","Flexo: Could not get an answer. "+(e.message ?: "Check connection."));scroll.post{scroll.fullScroll(View.FOCUS_DOWN)} }
+            }
             finally { main.post{busy=false;send.isEnabled=true} }
         }
     }
