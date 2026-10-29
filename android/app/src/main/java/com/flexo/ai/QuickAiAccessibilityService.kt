@@ -32,7 +32,7 @@ class QuickAiAccessibilityService : AccessibilityService() {
             downAt = event.eventTime
             if (gesture <= 1) {
                 val now = event.eventTime
-                val triggered = lastKey == event.keyCode && now - lastAt in 120..650
+                val triggered = lastKey == event.keyCode && now - lastAt in 120L..650L
                 lastKey = event.keyCode
                 lastAt = now
                 if (triggered) { launchOverlay(); lastKey = 0; return true }
