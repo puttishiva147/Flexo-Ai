@@ -1,0 +1,3 @@
+<resources>
+    <string name="quick_ai_accessibility_description">Optional Flexo Quick AI shortcut listener. It listens for the selected volume-key gesture only to open the Quick AI floating overlay. Enable it manually in Android Accessibility settings. It does not read screen content.</string>
+</resources>
