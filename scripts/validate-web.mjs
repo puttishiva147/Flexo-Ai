@@ -67,6 +67,11 @@ else {
     const natural = sandbox.cleanAssistantText("I found these matching parts in your local knowledge library.\nSources: Other AI history (1 file).\nThe answer is 42.");
     if (/I found these matching parts|Sources: Other AI history/i.test(natural)) errors.push("Internal retrieval narration was not removed");
     if (!natural.includes("The answer is 42.")) errors.push("Sanitizer removed the substantive answer");
+    const inline = sandbox.cleanAssistantText("Sure — I found these matching parts in your local knowledge library. The answer is 42.");
+    if (/I found these matching parts/i.test(inline)) errors.push("Inline retrieval narration leaked into the answer");
+    const matched = sandbox.cleanAssistantText("Matched 3 passages\\nThe answer is 42.");
+    if (/Matched 3 passages/i.test(matched)) errors.push("Internal matching count leaked into the answer");
+
     const metadata = sandbox.cleanAssistantText("Here are the matching passages from private-notes.txt.\n/storage/emulated/0/Documents/private-notes.txt\nThe answer is 42.");
     if (/matching passages|private-notes\.txt|storage\/emulated/i.test(metadata)) errors.push("Filename or retrieval metadata leaked into a response");
     if (!metadata.includes("The answer is 42.")) errors.push("Filename filtering removed the substantive answer");
