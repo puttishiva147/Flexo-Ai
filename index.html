@@ -437,7 +437,7 @@ async function load(){
  if(!support())throw new Error("This browser/device does not expose WebGPU on a secure HTTPS page. Local generative inference is unavailable here.");
  loading=(async function(){
   status("Preparing model…","Loading the local inference engine.","Preparing");
-  moduleRef=await import("https://esm.run/@mlc-ai/web-llm");
+  moduleRef=await import("https://esm.run/@mlc-ai/web-llm@0.2.87");
   var create=moduleRef.CreateMLCEngine||moduleRef.createMLCEngine;
   if(!create)throw new Error("The local inference engine did not expose its model loader.");
   engine=await create(MODEL_ID,{initProgressCallback:function(p){var msg=p&&p.text?p.text:"Downloading model assets…";progress(msg);status("Loading local model",msg,"Downloading")}});
