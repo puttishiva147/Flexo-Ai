@@ -548,10 +548,11 @@ function redactSensitive(value){
 }
 function cleanAssistantText(value){
  return redactSensitive(value)
+  .replace(/\b(?:I found these matching parts in your local knowledge library|I found it in your local knowledge library)[.!:]?/gi,"")
   .replace(/^\s*(?:I found these matching parts in your local knowledge library|I found it in your local knowledge library)[.!:]?\s*$/gim,"")
   .replace(/^\s*Sources?:\s*(?:Other AI history|Local knowledge|Knowledge library).*$/gim,"")
   .replace(/^\s*(?:I found|Here are|Below are)\s+(?:the\s+)?(?:matching|relevant)\s+(?:parts|passages|snippets|results|documents?)\b.*$/gim,"")
-  .replace(/^\s*(?:Retrieved|Matched|Knowledge retrieval|Internal search)\s*[:\-].*$/gim,"")
+  .replace(/^\s*(?:Retrieved|Matched|Search results?|Knowledge retrieval|Internal search)\b.*$/gim,"")
   .replace(/(?:file:\/\/\/|[A-Za-z]:\\|\/storage\/emulated\/)[^\s"'<>]+/gi,"[document path]")
   .replace(/(?:^|[\s"'(])(?:[A-Za-z0-9 _.-]+\/)*[A-Za-z0-9 _-]+\.(?:pdf|docx?|xlsx?|pptx?|txt|md|csv|json|html?|epub|odt|zip|png|jpe?g)\b/gi," [document]")
   .trim();
