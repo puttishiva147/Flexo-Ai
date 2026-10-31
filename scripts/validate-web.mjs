@@ -41,12 +41,13 @@ if (!html.includes('window.cleanAssistantText=cleanAssistantText')) errors.push(
 if (!html.includes('answer=ctx.map(function(x){return redactSensitive(x.c)})')) errors.push("Legacy knowledge fallback must not reveal retrieved passages");
 if (!html.includes('id="bl" alt="Flexo" style="height:22px"')) errors.push("Existing Flexo wordmark size must remain unchanged");
 
-const sanitizer = html.match(/function redactSensitive\\(value\\)\\{[\\s\\S]*?\\n\\}\\nfunction cleanAssistantText\\(value\\)\\{[\\s\\S]*?\\n\\}/);
-if (!sanitizer) errors.push("Could not isolate response sanitization functions");
+const sanitizerStart = html.indexOf("function redactSensitive(value){");
+const sanitizerEnd = html.indexOf("window.redactSensitive=redactSensitive;", sanitizerStart);
+if (sanitizerStart < 0 || sanitizerEnd < 0) errors.push("Could not isolate response sanitization functions");
 else {
   const sandbox = {};
   try {
-    vm.runInNewContext(sanitizer[0] + ";this.redactSensitive=redactSensitive;this.cleanAssistantText=cleanAssistantText;", sandbox);
+    vm.runInNewContext(html.slice(sanitizerStart, sanitizerEnd) + ";this.redactSensitive=redactSensitive;this.cleanAssistantText=cleanAssistantText;", sandbox);
     const secretCases = [
       ["password", "password: hunter2"],
       ["API key", "api_key=abcdefghijklmnop"],
