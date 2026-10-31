@@ -56,7 +56,9 @@ else {
       ["JWT", "abcdefghijk.abcdefghijk.abcdefghijk"],
       ["AWS access key", "AKIA1234567890ABCDEF"],
       ["private key", "-----BEGIN PRIVATE KEY-----\\nprivate-material\\n-----END PRIVATE KEY-----"],
-      ["recovery code", "recovery_code: 12345678"],\n      ["backup code", "backup_code: 12345678"],\n      ["connection string", "connection_string=postgres://user:pass@host/db"]
+      ["recovery code", "recovery_code: 12345678"],
+      ["backup code", "backup_code: 12345678"],
+      ["connection string", "connection_string=postgres://user:pass@host/db"]
     ];
     for (const [label, value] of secretCases) {
       const cleaned = sandbox.redactSensitive(value);
