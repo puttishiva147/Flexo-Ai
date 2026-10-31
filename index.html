@@ -552,6 +552,8 @@ function cleanAssistantText(value){
   .replace(/^\s*Sources?:\s*(?:Other AI history|Local knowledge|Knowledge library).*$/gim,"")
   .trim();
 }
+window.redactSensitive=redactSensitive;
+window.cleanAssistantText=cleanAssistantText;
 
 /* Use the local model when loaded; preserve the legacy deterministic mode as a clearly limited fallback. */
 var legacySend=window.send;
