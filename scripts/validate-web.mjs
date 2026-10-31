@@ -38,7 +38,7 @@ else {
 if (!html.includes('answer="I can’t produce a reliable answer from your Knowledge library until the on-device AI model is loaded.')) errors.push("Knowledge fallback must not expose raw retrieval passages");
 if (!html.includes('content:cleanAssistantText(String(m.c||"")).slice(0,1800)')) errors.push("Previous chat context must be sanitized before reuse");
 if (!html.includes('window.cleanAssistantText=cleanAssistantText')) errors.push("Shared sanitizer must be available to the legacy chat pipeline");
-if (!html.includes('answer=ctx.map(function(x){return redactSensitive(x.c)})')) errors.push("Legacy knowledge fallback must not reveal retrieved passages");
+if (!html.includes("I can’t produce a reliable answer from your Knowledge library until the on-device AI model is loaded.")) errors.push("Knowledge fallback must not expose raw retrieval passages");
 if (!html.includes('id="bl" alt="Flexo" style="height:22px"')) errors.push("Existing Flexo wordmark size must remain unchanged");
 
 const sanitizerStart = html.indexOf("function redactSensitive(value){");
