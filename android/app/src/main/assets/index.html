@@ -17,7 +17,7 @@ button{cursor:pointer;background:none;border:0;touch-action:manipulation;-webkit
 .nav button.on{background:linear-gradient(135deg,#1d1a13,#141315);color:var(--ac);box-shadow:inset 0 0 0 1px #3a3326}
 .nav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .main{flex:1;display:flex;flex-direction:column;min-width:0}
-.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--line);min-height:56px}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--line);min-height:76px}
 .bar img{height:26px}
 .bar .t{font-weight:600}
 .screens{flex:1;overflow:auto;position:relative}
@@ -86,11 +86,11 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
 @keyframes navEnter{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes iconBreathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-2px) scale(1.045)}}
 @keyframes activeIcon{0%{transform:scale(.82) rotate(-8deg)}65%{transform:scale(1.13) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
-.tab{position:fixed;z-index:20;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(560px,calc(100% - 28px));min-height:66px;align-items:center;justify-content:space-around;gap:2px;padding:7px 9px calc(7px + env(safe-area-inset-bottom,0px));border:1px solid rgba(227,203,166,.2);border-radius:24px;background:rgba(19,19,21,.88);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);box-shadow:0 12px 38px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.055);animation:navEnter .55s cubic-bezier(.2,.8,.2,1) both}
-.tab button{flex:1;min-width:0;max-width:96px;min-height:50px;border-radius:16px;transition:background .22s ease,color .22s ease,transform .22s ease;position:relative}
+.tab{position:fixed;z-index:20;left:50%;bottom:max(12px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(560px,calc(100% - 28px));min-height:66px;align-items:center;justify-content:space-between;gap:0;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));border:1px solid rgba(227,203,166,.2);border-radius:24px;background:rgba(19,19,21,.88);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);box-shadow:0 12px 38px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.055);animation:navEnter .55s cubic-bezier(.2,.8,.2,1) both}
+.tab button{flex:1 1 20%;min-width:0;max-width:none;min-height:54px;border-radius:16px;transition:background .22s ease,color .22s ease,transform .22s ease;position:relative}
 .tab button.on{background:rgba(227,203,166,.12);color:var(--ac)}
 .tab button.on:before{content:"";position:absolute;top:3px;width:18px;height:2px;border-radius:4px;background:var(--ac);box-shadow:0 0 12px rgba(227,203,166,.55)}
-.tab svg{transition:transform .25s cubic-bezier(.2,.8,.2,1);animation:iconBreathe 3.4s ease-in-out infinite}
+.tab svg{width:28px;height:28px;transition:transform .25s cubic-bezier(.2,.8,.2,1);animation:iconBreathe 3.4s ease-in-out infinite}
 .tab button:nth-child(2) svg{animation-delay:.2s}.tab button:nth-child(3) svg{animation-delay:.4s}.tab button:nth-child(4) svg{animation-delay:.6s}.tab button:nth-child(5) svg{animation-delay:.8s}
 .tab button.on svg{animation:activeIcon .38s ease both}
 .tab button:active{transform:scale(.93)}
@@ -114,7 +114,7 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
 /* Cohesive custom line icon system */
 .nav button svg,.tab button svg{width:23px;height:23px;display:block;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
 .tab button{min-height:52px}
-.tab button span{display:block;line-height:1.15;letter-spacing:.01em}
+.tab button span{display:block;font-size:12px;line-height:1.15;letter-spacing:0}
 .tab button.on svg{filter:drop-shadow(0 0 5px rgba(227,203,166,.2))}
 .tab button:focus-visible,.nav button:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
 
@@ -126,12 +126,12 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
 #chat .msgs{justify-content:flex-start}
 #chat .msgs>.empty{margin:clamp(18px,4vh,38px) auto 24px}
 @media(max-width:480px){
-  .bar.mob{padding-left:14px;padding-right:14px;min-height:64px}
+  .bar.mob{padding:10px 14px;min-height:82px}
   .bar.mob>div{min-width:0;gap:8px!important}
-  .bar.mob #bi{height:42px!important;max-width:46px;object-fit:contain}
-  .bar.mob #bl{height:19px!important;max-width:92px;object-fit:contain}
+  .bar.mob #bi{height:54px!important;max-width:58px;object-fit:contain}
+  .bar.mob #bl{height:30px!important;max-width:132px;object-fit:contain}
   .bar.mob #nc2{padding:7px 10px;font-size:12px;white-space:nowrap}
-  .tab{left:50%;right:auto;width:calc(100% - 28px);max-width:560px;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom,12px));}
+  .tab{left:50%;right:auto;width:calc(100% - 32px);max-width:560px;transform:translateX(-50%);bottom:max(12px,env(safe-area-inset-bottom,12px));}
   .tab button{max-width:none;min-width:0;padding-left:2px;padding-right:2px}
 }
 </style><script src="jszip.min.js"></script></head>
