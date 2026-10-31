@@ -51,7 +51,6 @@ india:"India is a country in South Asia. Its capital is New Delhi, and it has ma
 dna:"DNA is the molecule that carries hereditary instructions in living organisms. It contains information that helps cells grow, function, and reproduce.",
 planet:"A planet is a large, nearly round object that orbits a star and has cleared most other objects from its orbital neighbourhood. Earth is one of the eight planets in our solar system.",
 water:"Water is a clear substance made of hydrogen and oxygen. It is essential for life and exists naturally as a solid (ice), liquid, and gas (water vapour)."
-water:"Water is a clear substance made of hydrogen and oxygen. It is essential for life and exists naturally as a solid (ice), liquid, and gas (water vapour)."
 };
 function norm(s){return String(s||"").toLowerCase().replace(/[’']/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim()}
 function any(q,a){return a.some(function(x){return q.indexOf(x)!==-1})}
