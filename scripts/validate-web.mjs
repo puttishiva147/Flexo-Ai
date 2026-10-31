@@ -12,7 +12,13 @@ const required = [
   'onlineResearch',
   'function rank(query)',
   'pdfjs-dist@4.10.38',
-  'extractOffice(file)'
+  'extractOffice(file)',
+  "function redactSensitive(value)",
+  "function cleanAssistantText(value)",
+  "var kb=context.map(x=>redactSensitive(x.c))",
+  "var visibleSources=(x.src||[]).filter",
+  'style="height:46px;width:46px;object-fit:contain;flex:none"',
+  'id="bl" alt="Flexo" style="height:22px"'
 ];
 const errors = [];
 for (const item of required) if (!html.includes(item)) errors.push("Missing required implementation marker: " + item);
@@ -27,6 +33,10 @@ else {
     catch { errors.push("PWA manifest is invalid JSON"); }
   }
 }
+
+
+if (!html.includes('answer="I can’t produce a reliable answer from your Knowledge library until the on-device AI model is loaded.')) errors.push("Knowledge fallback must not expose raw retrieval passages");
+if (!html.includes('content:cleanAssistantText(String(m.c||"")).slice(0,1800)')) errors.push("Previous chat context must be sanitized before reuse");
 
 for (const match of html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)) {
   const attrs = match[1] || "";
