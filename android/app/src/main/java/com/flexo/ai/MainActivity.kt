@@ -14,7 +14,29 @@ import android.webkit.ValueCallback
 class MainActivity : Activity() {
     private lateinit var web: WebView
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
+    private var pendingExportJson: String? = null
     private val fileChooserRequestCode = 4107
+    private val exportRequestCode = 4108
+
+    private inner class FlexoBridge {
+        @JavascriptInterface
+        fun saveExportFile(json: String) {
+            runOnUiThread {
+                pendingExportJson = json
+                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "application/json"
+                    putExtra(Intent.EXTRA_TITLE, "flexo-data.json")
+                }
+                try {
+                    startActivityForResult(intent, exportRequestCode)
+                } catch (_: Exception) {
+                    pendingExportJson = null
+                    web.evaluateJavascript("window.FlexoExportResult && window.FlexoExportResult(false)", null)
+                }
+            }
+        }
+    }
 
     @Suppress("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +48,7 @@ class MainActivity : Activity() {
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = true
         web.settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+        web.addJavascriptInterface(FlexoBridge(), "FlexoAndroid")
         web.webViewClient = WebViewClient()
         web.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
@@ -63,6 +86,21 @@ class MainActivity : Activity() {
                 if (resultCode == Activity.RESULT_OK) WebChromeClient.FileChooserParams.parseResult(resultCode, data)
                 else null
             )
+        } else if (requestCode == exportRequestCode) {
+            val payload = pendingExportJson
+            pendingExportJson = null
+            val uri = if (resultCode == Activity.RESULT_OK) data?.data else null
+            val saved = try {
+                if (uri != null && payload != null) {
+                    contentResolver.openOutputStream(uri)?.use { stream ->
+                        stream.write(payload.toByteArray(Charsets.UTF_8))
+                    } ?: throw IllegalStateException("Unable to open the selected file")
+                    true
+                } else false
+            } catch (_: Exception) {
+                false
+            }
+            web.evaluateJavascript("window.FlexoExportResult && window.FlexoExportResult($saved)", null)
         }
     }
 
