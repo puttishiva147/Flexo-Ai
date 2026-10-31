@@ -1,4 +1,4 @@
-const CACHE_NAME = "flexo-app-shell-v2";
+const CACHE_NAME = "flexo-app-shell-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -28,8 +28,26 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  const sameOrigin = url.origin === self.location.origin;
+  const runtimeOrigin = url.origin === "https://esm.run" || url.origin === "https://cdn.jsdelivr.net";
+  if (!sameOrigin && !runtimeOrigin) return;
   if (url.pathname.includes("/api/")) return;
+
+  // Cache only the explicitly used JavaScript module CDNs. Model weights are
+  // managed by WebLLM's own browser cache; arbitrary external data is not cached.
+  if (!sameOrigin) {
+    if (!/\\.(?:m?js)(?:$|\\?)/i.test(url.pathname)) return;
+    event.respondWith(
+      caches.match(request).then(cached => cached || fetch(request).then(response => {
+        if (response.ok && response.type !== "opaque") {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        }
+        return response;
+      }))
+    );
+    return;
+  }
 
   if (request.mode === "navigate") {
     event.respondWith(
