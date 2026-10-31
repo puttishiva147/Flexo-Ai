@@ -45,6 +45,7 @@ try { new vm.Script(sw, { filename: "service-worker.js" }); }
 catch (error) { errors.push("Service worker JavaScript syntax error: " + error.message); }
 if (!sw.includes("flexo-app-shell-v3")) errors.push("Service worker cache version was not bumped");
 if (!sw.includes("https://esm.run") || !sw.includes("https://cdn.jsdelivr.net")) errors.push("Runtime CDN cache allowlist is missing");
+if (!sw.includes(String.raw`/\.(?:m?js)(?:$|\?)/i`)) errors.push("Runtime JavaScript asset matcher is malformed");
 if (!sw.includes('url.pathname.includes("/api/")')) errors.push("Service worker API cache exclusion is missing");
 
 if (errors.length) {
