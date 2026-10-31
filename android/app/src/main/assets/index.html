@@ -389,7 +389,8 @@ function sw(el,k){el.classList.toggle("on",S.cfg[k]);el.onclick=function(){S.cfg
 function rs(){rpv()}
 sw($("t1"),"useKb");sw($("t2"),"saveHist");
 $("ro").onclick=function(){hero("onb")};
-$("ex").onclick=function(){var a=E("a");a.href=URL.createObjectURL(new Blob([JSON.stringify({chats:S.chats,kb:S.kb,cfg:S.cfg},function(k,v){return k=="img"?undefined:v},1)],{type:"application/json"}));a.download="flexo-data.json";a.click()};
+window.FlexoExportResult=function(ok){var b=$("ex");if(!b)return;b.textContent=ok?"Saved":"Export";if(!ok)b.title="Export cancelled or could not be saved.";else b.title="Flexo data backup saved.";};
+$("ex").onclick=function(){var payload=JSON.stringify({chats:S.chats,kb:S.kb,cfg:S.cfg},function(k,v){return k=="img"?undefined:v},1);if(window.FlexoAndroid&&typeof window.FlexoAndroid.saveExportFile=="function"){window.FlexoAndroid.saveExportFile(payload);return}var a=E("a");a.href=URL.createObjectURL(new Blob([payload],{type:"application/json"}));a.download="flexo-data.json";a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1000)};
 $("del").onclick=function(){var b=this;if(b.dataset.s!="1"){b.dataset.s="1";b.textContent="Tap again to confirm";return}try{localStorage.removeItem("flexo_v1")}catch(e){}S.chats=[];S.kb=[];S.cur=null;S.cfg={useKb:true,saveHist:true,start:""};b.dataset.s="";b.textContent="Delete";sw($("t1"),"useKb");sw($("t2"),"saveHist");rs();rc()};
 /* onboarding */
 
