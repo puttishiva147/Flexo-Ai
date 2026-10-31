@@ -36,7 +36,7 @@ self.addEventListener("fetch", event => {
   // Cache only the explicitly used JavaScript module CDNs. Model weights are
   // managed by WebLLM's own browser cache; arbitrary external data is not cached.
   if (!sameOrigin) {
-    if (!/\\.(?:m?js)(?:$|\\?)/i.test(url.pathname) && !url.pathname.includes("/@mlc-ai/web-llm")) return;
+    if (!/\.(?:m?js)(?:$|\?)/i.test(url.pathname) && !url.pathname.includes("/@mlc-ai/web-llm")) return;
     event.respondWith(
       caches.match(request).then(cached => cached || fetch(request).then(response => {
         if (response.ok && response.type !== "opaque") {
