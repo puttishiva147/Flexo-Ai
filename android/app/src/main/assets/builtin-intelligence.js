@@ -49,7 +49,9 @@ ecosystem:"An ecosystem is a community of living things interacting with one ano
 computer:"A computer is an electronic device that receives input, processes information according to instructions, stores data, and produces output.",
 india:"India is a country in South Asia. Its capital is New Delhi, and it has many languages, cultures, and landscapes.",
 dna:"DNA is the molecule that carries hereditary instructions in living organisms. It contains information that helps cells grow, function, and reproduce.",
-planet:"A planet is a large, nearly round object that orbits a star and has cleared most other objects from its orbital neighbourhood. Earth is one of the eight planets in our solar system.",\nwater:"Water is a clear substance made of hydrogen and oxygen. It is essential for life and exists naturally as a solid (ice), liquid, and gas (water vapour)."
+planet:"A planet is a large, nearly round object that orbits a star and has cleared most other objects from its orbital neighbourhood. Earth is one of the eight planets in our solar system.",
+water:"Water is a clear substance made of hydrogen and oxygen. It is essential for life and exists naturally as a solid (ice), liquid, and gas (water vapour)."
+water:"Water is a clear substance made of hydrogen and oxygen. It is essential for life and exists naturally as a solid (ice), liquid, and gas (water vapour)."
 };
 function norm(s){return String(s||"").toLowerCase().replace(/[’']/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim()}
 function any(q,a){return a.some(function(x){return q.indexOf(x)!==-1})}
@@ -57,7 +59,9 @@ function out(type,text){return {type:type,text:text}}
 function respond(input){
 var q=norm(input);if(!q)return null;
 if(/^(hi|hii+|hello|hey|heyy+|hiya|namaste|good morning|good afternoon|good evening|howdy)( flexo)?$/.test(q)||/^(hi|hello|hey|namaste) (there|flexo)$/.test(q))return out("conversation","Hey! 👋 I’m Flexo. What would you like to explore today?");
-if(any(q,["what is your name","who are you","are you flexo"]))return out("conversation","I’m Flexo, your personal assistant. I can answer common questions and search your Knowledge Library.");\nif(any(q,["who created you","who made you","who owns you"]))return out("app","Flexo AI was created by Shiva Putti, the project owner and developer.");\nif(any(q,["how are you","how r u","kaise ho","kya haal"]))return out("conversation","I’m doing well and ready to help. How’s your day going?");
+if(any(q,["what is your name","who are you","are you flexo"]))return out("conversation","I’m Flexo, your personal assistant. I can answer common questions and search your Knowledge Library.");
+if(any(q,["who created you","who made you","who owns you"]))return out("app","Flexo AI was created by Shiva Putti, the project owner and developer.");
+if(any(q,["how are you","how r u","kaise ho","kya haal"]))return out("conversation","I’m doing well and ready to help. How’s your day going?");
 if(any(q,["thank you","thanks","thx","shukriya","dhanyavad"]))return out("conversation","You’re welcome! 😊 I’m here whenever you need a hand.");
 if(/^(bye|goodbye|see you|see ya|take care|good night)$/.test(q))return out("conversation","See you soon! Take care. 👋");
 if(any(q,["who created flexo","who made flexo","who built flexo","who is the owner of flexo","who owns flexo","flexo owner","creator of flexo","developer of flexo","who developed flexo","who is behind flexo"]))return out("app","Flexo AI was created by Shiva Putti, the project owner and developer.");
@@ -65,10 +69,10 @@ if(any(q,["what is flexo","what is flexo ai","about flexo","tell me about flexo"
 if(any(q,["what can you do","your features","your capabilities","how can you help","help me use flexo"]))return out("conversation","I can answer common questions, explain basic topics, chat with you, and search your imported Knowledge Library when it contains relevant information. You can also import conversation exports and save notes for later.");
 if(any(q,["do you save my data","where is my data stored","where do you store my data","are you collecting my data","do you collect my data","is my data private"]))return out("app","Your imported Knowledge Library is stored in this app on your device. Chat history is saved on this device when Save chat history is enabled. You can review the export and delete controls in Settings.");
 if(any(q,["tell me about animals","what are animals","animal kingdom","types of animals","different kinds of animals","about animals"]))return out("knowledge","Animals are living organisms that need energy, grow, respond to their surroundings, and reproduce. They include mammals, birds, reptiles, amphibians, fish, and invertebrates such as insects and octopuses. Animals live in forests, grasslands, oceans, deserts, and many other habitats. Some eat plants, some eat other animals, and some eat both.");
-var prefixes=["tell me about ","what is a ","what is an ","what is the ","what are ","who is a ","who is an ","describe ","explain ","facts about ","information about ","information on ","learn about ","teach me about ","give me facts about ","i want to know about ","can you tell me about ","do you know about "],name="";
+var prefixes=["tell me about ","what is a ","what is an ","what is the ","what is ","what are ","who is a ","who is an ","describe ","explain ","facts about ","information about ","information on ","learn about ","teach me about ","give me facts about ","i want to know about ","can you tell me about ","do you know about "],name="";
 for(var i=0;i<prefixes.length;i++)if(q.indexOf(prefixes[i])===0){name=q.slice(prefixes[i].length);break}
 if(!name&&/^(lion|tiger|elephant|dolphin|whale|shark|eagle|penguin|giraffe|wolf|fox|bear|rabbit|cat|dog|horse|cow|bee|butterfly|snake|crocodile|octopus|owl|monkey|gorilla|kangaroo|panda|cheetah|leopard|deer|ant)s?$/.test(q))name=q;
-name=name.replace(/^(a|an|the) /,"").replace(/\?+$/,"").trim();
+name=name.replace(/^(a|an|the) /,"").replace(/\?+$/,"").replace(/\s+(animal|animals|species|please|in detail)$/,"").trim();
 if(name){var key=alias[name]||name;if(facts[key])return out("knowledge",facts[key]);var topic=name.replace(/[^a-z]/g,"");if(topics[topic])return out("knowledge",topics[topic])}
 if(any(q,["what is photosynthesis","explain photosynthesis","how do plants make food"]))return out("knowledge",topics.photosynthesis);
 if(any(q,["what is gravity","explain gravity","why do things fall"]))return out("knowledge",topics.gravity);
