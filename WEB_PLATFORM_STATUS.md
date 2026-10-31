@@ -1,21 +1,24 @@
-# Web/PWA foundation status
+# Flexo AI implementation status
 
-This repository is being upgraded in place. The current interface is migrated from the existing embedded HTML asset into the repository root without redesigning it or changing the existing `flexo_v1` local data key.
+## Implemented in this branch
+- Existing interface migrated to the web root and retained; existing flexo_v1 storage key remains in use.
+- Installable PWA manifest and service worker with app-shell caching.
+- Local WebLLM inference integration using the prebuilt Qwen2.5 0.5B Instruct q4f16_1 model. The user explicitly starts the model download; inference runs in the browser with WebGPU and does not send chat prompts to a provider.
+- A local model status/download/unload panel, WebGPU capability check, and progress feedback.
+- The chat path uses the local model when it is loaded, includes recent conversation turns, and injects ranked local knowledge passages. The legacy deterministic fallback remains when no model is loaded; it is not represented as general AI.
+- Optional online research, disabled by default. When enabled and connected, Flexo searches public Wikipedia results without a provider API key. With a loaded local model, retrieved passages are supplied as context and source URLs are appended. Without a model, results are shown as research results, not misrepresented as generated answers.
+- Knowledge import for TXT, Markdown, CSV, JSON, HTML, DOCX, XLSX, PPTX, ODT, EPUB, and text-based PDF. Office files are extracted from their Open XML/ZIP contents. PDF text extraction uses PDF.js; scanned/image-only PDFs still require OCR, which is not included.
+- Improved local retrieval using term frequency, inverse document frequency, query coverage, exact phrase and title relevance.
 
-## What this foundation delivers
-- The existing Flexo interface is served as a normal web app from `index.html`.
-- Existing local scripts and browser-side data behavior are retained.
-- PWA manifest and service worker provide install support on compatible browsers and cache the app shell for offline reopening after the first successful visit.
-- The service worker does not cache API requests.
+## Important limitations not completed
+- A 0.5B local model is compact and has limited reasoning, coding, math, long-context, and multilingual ability. It is not equivalent to a large hosted model.
+- WebGPU availability and memory differ by device/browser. The model may fail to load on unsupported phones, low-memory devices, or browsers with WebGPU disabled. The user must test it on the target phone.
+- Online research currently uses Wikipedia's public search/summary endpoints only. This is not full-web search, current news coverage, or a multi-source research engine.
+- Image understanding, OCR for scanned PDFs, audio, video, advanced spreadsheet formulas, full vector embeddings, and a robust persistent memory system are not implemented yet.
+- Offline first-run model setup requires internet to download the inference module and model assets. Once downloaded and retained by browser storage, offline use may work; browser storage eviction can require downloading again.
+- This branch has been syntax-checked and source-inspected. It has not yet been tested on the user's physical device or a deployed HTTPS origin.
 
-## Important limitations (not represented as completed)
-- Offline app-shell availability is not the same as offline generative AI. A real local language model runtime and downloadable model are still required.
-- Built-in responses and keyword-based knowledge lookup are not a general-purpose reasoning model.
-- Online research, live source citations, document extraction, vector retrieval, and local-model orchestration remain future implementation stages.
-- Installability and offline behavior must be verified on the deployed HTTPS origin and on target devices.
-
-## Preserve existing data
-The migrated interface continues to use the existing `flexo_v1` browser storage key. Do not clear browser storage during upgrades. Android WebView storage and browser/PWA storage are separate origins and are not automatically migrated between them.
-
-## Deployment
-Deploy the repository root as a static site on an HTTPS host. The root `index.html` is the entry point. No API key is required for this PWA shell.
+## Privacy and data
+- Local model inference stays in the browser.
+- Online research is opt-in and sends only the search query to Wikipedia. Private files and chat history are not sent to Wikipedia.
+- Existing local storage is preserved; no migration clears the user's data.
