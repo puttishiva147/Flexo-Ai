@@ -490,7 +490,7 @@ async function extractOffice(file){
 var oldImport=document.getElementById("fi");
 if(oldImport)oldImport.onchange=async function(e){
  var files=Array.from(e.target.files||[]);e.target.value="";if(!files.length)return;
- var imported=0,errors=[];
+ var imported=0,errors=[],originalKb=S.kb.slice();
  for(var file of files){try{
   var ext=(file.name.split(".").pop()||"").toLowerCase(),text="";
   if(ext==="pdf"){
@@ -508,7 +508,7 @@ if(oldImport)oldImport.onchange=async function(e){
   var parts=chunk(text);if(!parts.length)throw new Error("No text chunks extracted");
   S.kb=S.kb.filter(k=>k.name!==file.name);S.kb.push({name:file.name,ch:parts,kind:ext,updatedAt:Date.now()});imported++;
  }catch(err){errors.push(file.name+": "+(err.message||"could not read"))}}
- var ok=save();rk();
+ var ok=save();if(!ok)S.kb=originalKb;rk();
  var msg="Imported "+imported+" file(s) into your on-device library.";
  if(errors.length)msg+="\nNot imported: "+errors.join("; ");
  if(!ok)msg+=" Storage limit reached; export a backup and remove large files.";
