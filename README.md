@@ -1,29 +1,20 @@
 # Flexo AI
 
-Flexo AI — Your Personal AI Assistant. This repository currently contains an Android debug-app shell and a GitHub Actions workflow that builds an APK.
+Flexo AI is being improved **in this existing repository**. The current interface has been migrated from the embedded asset into a root-level web app so it can be hosted as an installable PWA without creating a replacement product or repository.
 
-## Build APK
-1. Open **Actions**.
-2. Select **Build Flexo AI APK** and run it manually, or push changes under `android/`.
-3. Open the completed workflow run and download the `FlexoAI-debug-apk` artifact.
+## Current web foundation
+- Existing interface retained at `index.html`.
+- Existing browser scripts retained: `builtin-intelligence.js` and `jszip.min.js`.
+- Existing `flexo_v1` local-storage key preserved.
+- PWA manifest and service worker added for install support and offline app-shell caching after the first successful load.
+- API requests are not cached by the service worker.
 
-## Current limitations
-- The Android shell and local Quick AI fallback are buildable scaffolding, not the full original Flexo AI web/backend product.
-- The included Quick AI page prepares questions locally; it does not generate AI answers without a hosted AI backend.
-- A debug APK is unsigned for production distribution. A production release requires a securely configured signing key.
+## Honest capability status
+This is a foundation, not a claim that the full all-in-one AI vision is complete. Built-in responses and keyword-based local knowledge lookup are not equivalent to a general reasoning model. A true offline AI experience still needs an actual local model runtime and downloadable model weights. Online research, source-backed citations, robust document extraction, and advanced retrieval are also separate implementation stages.
 
+See [WEB_PLATFORM_STATUS.md](./WEB_PLATFORM_STATUS.md) for details.
 
-## Quick AI overlay (Android)
-- Open **Quick AI Settings** from the main screen.
-- Grant **Display over other apps** permission.
-- Enable Quick AI and choose the floating button and/or volume-key gesture.
-- To use volume-key gestures, manually enable **Flexo Quick AI shortcut listener** in Android Accessibility settings. This optional service requests key-event filtering only to detect the selected volume key; Android/OEM behavior may vary and some devices may not deliver these events.
-- Set the HTTPS endpoint ending in `/api/quick-ai`. Configure `OPENAI_API_KEY` as a server-side environment variable on the API host. Never put provider secrets in the Android app.
-- The overlay is a foreground service with an ongoing notification. Android can still stop services, restrict overlays on the lock screen, or block background launches. The app does not use hidden APIs.
-- Current shortcut options: double press Volume Down/Up and long press Volume Down/Up. Long press is detected on key release when Android delivers key events to the enabled Accessibility Service; it is not universally guaranteed.
+## Deployment
+Deploy the repository root as a static site on an HTTPS host. The web entry point is `index.html`. No provider API key is needed for the PWA shell itself.
 
-### Known limitations / verification
-- Accessibility-based global hardware-key interception depends on Android version, OEM implementation, the user enabling the service, and system policy. Floating button is the reliable fallback.
-- The overlay chat supports text and conversational context in memory for the service lifetime. Image/screen understanding is not implemented in the native overlay yet.
-- Real AI responses require a reachable hosted API and a valid server-side API key.
-- Build CI validates compilation; physical overlay/volume-key testing must still be done on each target device. Do not treat CI build success as real-device acceptance.
+The legacy Android project is retained in this branch for now so existing files are not destructively removed before the web version is verified.
