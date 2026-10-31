@@ -1,10 +1,11 @@
-const CACHE_NAME = "flexo-app-shell-v1";
+const CACHE_NAME = "flexo-app-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./builtin-intelligence.js",
   "./jszip.min.js",
+  "./local-ai.js",
   "./icons/flexo-mark.svg"
 ];
 
