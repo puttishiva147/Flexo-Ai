@@ -3,6 +3,9 @@ package com.flexo.ai
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.net.Uri
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -19,6 +22,23 @@ class MainActivity : Activity() {
     private val exportRequestCode = 4108
 
     private inner class FlexoBridge {
+        @JavascriptInterface
+        fun hapticTick() {
+            try {
+                val vibrator = getSystemService(Vibrator::class.java)
+                if (vibrator != null && vibrator.hasVibrator()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
+                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(10, VibrationEffect.DEFAULT_AMPLITUDE))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator.vibrate(10)
+                    }
+                }
+            } catch (_: Exception) { }
+        }
+
         @JavascriptInterface
         fun saveExportFile(json: String) {
             runOnUiThread {
