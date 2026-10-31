@@ -41,6 +41,8 @@ for (const file of ["builtin-intelligence.js", "jszip.min.js", "service-worker.j
 }
 
 const sw = fs.readFileSync("service-worker.js", "utf8");
+try { new vm.Script(sw, { filename: "service-worker.js" }); }
+catch (error) { errors.push("Service worker JavaScript syntax error: " + error.message); }
 if (!sw.includes("flexo-app-shell-v3")) errors.push("Service worker cache version was not bumped");
 if (!sw.includes("https://esm.run") || !sw.includes("https://cdn.jsdelivr.net")) errors.push("Runtime CDN cache allowlist is missing");
 if (!sw.includes('url.pathname.includes("/api/")')) errors.push("Service worker API cache exclusion is missing");
