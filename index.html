@@ -542,7 +542,7 @@ function redactSensitive(value){
   /\bAKIA[0-9A-Z]{16}\b/g,
   /\bBearer\s+[A-Za-z0-9._~+\/-]{16,}/gi,
   /\b[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g,
-  /\b(password|passwd|passphrase|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|auth[_ -]?token|client[_ -]?secret|private[_ -]?key|recovery[_ -]?code|secret|credential|otp|pin)\s*[:=]\s*[^\r\n,;]+/gi
+  /\b(password|passwd|passphrase|passcode|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|auth[_ -]?token|client[_ -]?secret|private[_ -]?key|recovery[_ -]?code|backup[_ -]?code|verification[_ -]?code|one[_ -]?time[_ -]?password|aws[_ -]?secret[_ -]?access[_ -]?key|secret[_ -]?access[_ -]?key|database[_ -]?url|connection[_ -]?string|secret|credential|otp|pin)\s*[:=]\s*[^\r\n,;]+/gi
  ].forEach(function(re){text=text.replace(re,"[REDACTED]")});
  return text;
 }
@@ -550,6 +550,10 @@ function cleanAssistantText(value){
  return redactSensitive(value)
   .replace(/^\s*(?:I found these matching parts in your local knowledge library|I found it in your local knowledge library)[.!:]?\s*$/gim,"")
   .replace(/^\s*Sources?:\s*(?:Other AI history|Local knowledge|Knowledge library).*$/gim,"")
+  .replace(/^\s*(?:I found|Here are|Below are)\s+(?:the\s+)?(?:matching|relevant)\s+(?:parts|passages|snippets|results|documents?)\b.*$/gim,"")
+  .replace(/^\s*(?:Retrieved|Matched|Knowledge retrieval|Internal search)\s*[:\-].*$/gim,"")
+  .replace(/(?:file:\/\/\/|[A-Za-z]:\\|\/storage\/emulated\/)[^\s"'<>]+/gi,"[document path]")
+  .replace(/(?:^|[\s"'(])(?:[A-Za-z0-9 _.-]+\/)*[A-Za-z0-9 _-]+\.(?:pdf|docx?|xlsx?|pptx?|txt|md|csv|json|html?|epub|odt|zip|png|jpe?g)\b/gi," [document]")
   .trim();
 }
 window.redactSensitive=redactSensitive;
