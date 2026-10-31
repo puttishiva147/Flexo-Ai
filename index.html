@@ -539,7 +539,7 @@ function redactSensitive(value){
  [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----[\\s\\S]*?-----END [A-Z ]*PRIVATE KEY-----/gi,
   /\\b(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{16,}|AIza[0-9A-Za-z_-]{30,})\\b/g,
-  /\\bAKIA[0-9A-Z]{16}\\b/g,
+  /\\bAKIA[0-9A-Z]{16}\\b/g,\n  /\\bBearer\\s+[A-Za-z0-9._~+\\/-]{16,}/gi,\n  /\\b[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b/g,
   /\\b(password|passwd|passphrase|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|auth[_ -]?token|client[_ -]?secret|private[_ -]?key|recovery[_ -]?code)\\s*[:=]\\s*[^\\r\\n,;]+/gi
  ].forEach(function(re){text=text.replace(re,"[REDACTED]")});
  return text;
@@ -586,7 +586,7 @@ window.send=async function(input){
   c0.m.push({r:"assistant",c:out,src:web.map(x=>x.url)});save();rc();return
  }
  var c=chat();if(!c){c={id:Date.now(),t:text.slice(0,44),m:[]};S.chats.unshift(c);S.cur=c.id}
- S.cfg.welcomed=true;var context=rank(text),history=(c.m||[]).slice(-8).map(m=>({role:m.r==="assistant"?"assistant":"user",content:String(m.c||"").slice(0,1800)}));
+ S.cfg.welcomed=true;var context=rank(text),history=(c.m||[]).slice(-8).map(m=>({role:m.r==="assistant"?"assistant":"user",content:cleanAssistantText(String(m.c||"")).slice(0,1800)}));
  c.m.push({r:"user",c:text});busy=true;rc();
  try{
   var kb=context.map(x=>redactSensitive(x.c)).filter(Boolean).join("\n\n")||"No relevant local knowledge passages were retrieved.";
