@@ -1,20 +1,19 @@
 # Flexo AI
 
-Flexo AI is being improved **in this existing repository**. The current interface has been migrated from the embedded asset into a root-level web app so it can be hosted as an installable PWA without creating a replacement product or repository.
+Flexo AI is being upgraded in this existing repository as a local-first, installable web application.
 
-## Current web foundation
-- Existing interface retained at `index.html`.
-- Existing browser scripts retained: `builtin-intelligence.js` and `jszip.min.js`.
-- Existing `flexo_v1` local-storage key preserved.
-- PWA manifest and service worker added for install support and offline app-shell caching after the first successful load.
-- API requests are not cached by the service worker.
+## Implemented foundation and intelligence stage
+- Existing UI retained at the repository root; existing flexo_v1 browser storage key preserved.
+- PWA manifest and service worker for app installation and offline app-shell caching.
+- Optional browser-local WebLLM inference using Qwen2.5-0.5B-Instruct (q4f16_1). Requires WebGPU and a one-time model download.
+- Conversation context and ranked local knowledge retrieval are passed to the model when loaded.
+- Optional keyless public Wikipedia research, disabled by default.
+- Knowledge import for text, CSV, JSON, HTML, DOCX, XLSX, PPTX, ODT, EPUB and text-based PDF.
 
-## Honest capability status
-This is a foundation, not a claim that the full all-in-one AI vision is complete. Built-in responses and keyword-based local knowledge lookup are not equivalent to a general reasoning model. A true offline AI experience still needs an actual local model runtime and downloadable model weights. Online research, source-backed citations, robust document extraction, and advanced retrieval are also separate implementation stages.
+## Honest capability statement
+This is meaningful working functionality, but not yet the complete all-in-one AI vision. The compact local model has limited capability; full web research, image understanding, scanned-PDF OCR, audio/video, advanced vector search, persistent memory, and device-level acceptance testing remain outstanding.
 
-See [WEB_PLATFORM_STATUS.md](./WEB_PLATFORM_STATUS.md) for details.
+See WEB_PLATFORM_STATUS.md for implementation details and limitations.
 
 ## Deployment
-Deploy the repository root as a static site on an HTTPS host. The web entry point is `index.html`. No provider API key is needed for the PWA shell itself.
-
-The legacy Android project is retained in this branch for now so existing files are not destructively removed before the web version is verified.
+The repository root is the static web app. Deploy on HTTPS to enable PWA installation and WebGPU features. No provider API key is required for the local model or the optional Wikipedia search.
