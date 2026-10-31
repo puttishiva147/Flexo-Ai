@@ -56,7 +56,7 @@ else {
       ["JWT", "abcdefghijk.abcdefghijk.abcdefghijk"],
       ["AWS access key", "AKIA1234567890ABCDEF"],
       ["private key", "-----BEGIN PRIVATE KEY-----\\nprivate-material\\n-----END PRIVATE KEY-----"],
-      ["recovery code", "recovery_code: 12345678"]
+      ["recovery code", "recovery_code: 12345678"],\n      ["backup code", "backup_code: 12345678"],\n      ["connection string", "connection_string=postgres://user:pass@host/db"]
     ];
     for (const [label, value] of secretCases) {
       const cleaned = sandbox.redactSensitive(value);
@@ -64,7 +64,7 @@ else {
     }
     const natural = sandbox.cleanAssistantText("I found these matching parts in your local knowledge library.\nSources: Other AI history (1 file).\nThe answer is 42.");
     if (/I found these matching parts|Sources: Other AI history/i.test(natural)) errors.push("Internal retrieval narration was not removed");
-    if (!natural.includes("The answer is 42.")) errors.push("Sanitizer removed the substantive answer");
+    if (!natural.includes("The answer is 42.")) errors.push("Sanitizer removed the substantive answer");\n    const metadata = sandbox.cleanAssistantText("Here are the matching passages from private-notes.txt.\\n/storage/emulated/0/Documents/private-notes.txt\\nThe answer is 42.");\n    if (/matching passages|private-notes\\.txt|storage\\/emulated/i.test(metadata)) errors.push("Filename or retrieval metadata leaked into a response");\n    if (!metadata.includes("The answer is 42.")) errors.push("Filename filtering removed the substantive answer");
   } catch (error) { errors.push("Sanitizer regression test failed: " + error.message); }
 }
 
