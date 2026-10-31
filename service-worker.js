@@ -5,7 +5,6 @@ const APP_SHELL = [
   "./manifest.webmanifest",
   "./builtin-intelligence.js",
   "./jszip.min.js",
-  "./local-ai.js",
   "./icons/flexo-mark.svg"
 ];
 
