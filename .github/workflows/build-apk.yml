@@ -2,7 +2,7 @@ name: Build Flexo AI APK # Local-only build with no network permission
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/built-in-intelligence-ui]
     paths:
       - 'android/**'
       - '.github/workflows/build-apk.yml'
