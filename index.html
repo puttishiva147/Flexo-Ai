@@ -537,17 +537,19 @@ window.retrieve=rank;
 function redactSensitive(value){
  var text=String(value==null?"":value);
  [
-  /-----BEGIN [A-Z ]*PRIVATE KEY-----[\\s\\S]*?-----END [A-Z ]*PRIVATE KEY-----/gi,
-  /\\b(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{16,}|AIza[0-9A-Za-z_-]{30,})\\b/g,
-  /\\bAKIA[0-9A-Z]{16}\\b/g,\n  /\\bBearer\\s+[A-Za-z0-9._~+\\/-]{16,}/gi,\n  /\\b[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\b/g,
-  /\\b(password|passwd|passphrase|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|auth[_ -]?token|client[_ -]?secret|private[_ -]?key|recovery[_ -]?code)\\s*[:=]\\s*[^\\r\\n,;]+/gi
+  /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/gi,
+  /\b(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{16,}|AIza[0-9A-Za-z_-]{30,})\b/g,
+  /\bAKIA[0-9A-Z]{16}\b/g,
+  /\bBearer\s+[A-Za-z0-9._~+\/-]{16,}/gi,
+  /\b[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g,
+  /\b(password|passwd|passphrase|api[_ -]?key|access[_ -]?token|refresh[_ -]?token|auth[_ -]?token|client[_ -]?secret|private[_ -]?key|recovery[_ -]?code)\s*[:=]\s*[^\r\n,;]+/gi
  ].forEach(function(re){text=text.replace(re,"[REDACTED]")});
  return text;
 }
 function cleanAssistantText(value){
  return redactSensitive(value)
-  .replace(/^\\s*(?:I found these matching parts in your local knowledge library|I found it in your local knowledge library)[.!:]?\\s*$/gim,"")
-  .replace(/^\\s*Sources?:\\s*(?:Other AI history|Local knowledge|Knowledge library).*$/gim,"")
+  .replace(/^\s*(?:I found these matching parts in your local knowledge library|I found it in your local knowledge library)[.!:]?\s*$/gim,"")
+  .replace(/^\s*Sources?:\s*(?:Other AI history|Local knowledge|Knowledge library).*$/gim,"")
   .trim();
 }
 
