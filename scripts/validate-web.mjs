@@ -62,7 +62,7 @@ else {
       const cleaned = sandbox.redactSensitive(value);
       if (cleaned.includes(value.replace(/^.*?[:=]\\s*/, "")) || !cleaned.includes("[REDACTED]")) errors.push("Sensitive-data redaction failed: " + label);
     }
-    const natural = sandbox.cleanAssistantText("I found these matching parts in your local knowledge library.\\nSources: Other AI history (1 file).\\nThe answer is 42.");
+    const natural = sandbox.cleanAssistantText("I found these matching parts in your local knowledge library.\nSources: Other AI history (1 file).\nThe answer is 42.");
     if (/I found these matching parts|Sources: Other AI history/i.test(natural)) errors.push("Internal retrieval narration was not removed");
     if (!natural.includes("The answer is 42.")) errors.push("Sanitizer removed the substantive answer");
   } catch (error) { errors.push("Sanitizer regression test failed: " + error.message); }
