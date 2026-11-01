@@ -436,7 +436,7 @@ Flexo AI should be able to use this pack to understand relevant previous discuss
 
 Start processing the conversation exports and files that are actually available. Do not merely provide a plan or pretend to have access to conversations that were never supplied.`;
 var S={chats:[],kb:[],cfg:{useKb:true,saveHist:true,start:""},cur:null};
-try{var raw=localStorage.getItem("flexo_v1");if(raw){var p=JSON.parse(raw);for(var k in p)S[k]=p[k]}}catch(e){}
+try{var raw=localStorage.getItem("flexo_v1");if(raw){var p=JSON.parse(raw);for(var k in p)S[k]=p[k]}}catch(e){}S.cfg=Object.assign({useKb:true,saveHist:true,start:"",welcomed:true},S.cfg||{});
 S.cur=null;var busy=false,t0=0,ab=null,cur="chat",$=function(i){return document.getElementById(i)};
 function E(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
 function save(){try{localStorage.setItem("flexo_v1",JSON.stringify({chats:S.cfg.saveHist?S.chats:[],kb:S.kb,cfg:S.cfg},function(k,v){if(k=="img")return undefined;return v}));return true}catch(e){return false}}
@@ -626,7 +626,7 @@ $("ex").onclick=function(){var payload=JSON.stringify({chats:S.chats,kb:S.kb,cfg
 $("del").onclick=function(){var b=this;if(b.dataset.s!="1"){b.dataset.s="1";b.textContent="Tap again to confirm";return}try{localStorage.removeItem("flexo_v1");localStorage.removeItem(FLEXO_NOTICE_KEY)}catch(e){}S.chats=[];S.kb=[];S.cur=null;S.cfg={useKb:true,saveHist:true,start:""};if(typeof setNotices==="function")setNotices([]);if(typeof renderNotices==="function")renderNotices();b.dataset.s="";b.textContent="Delete";sw($("t1"),"useKb");sw($("t2"),"saveHist");rs();rc()};
 /* onboarding */
 
-$("onb").onclick=function(e){var b=e.target.closest(".choice");if(!b)return;S.cfg.start=b.dataset.c;save();hero("");$("pk").innerHTML="";
+$("onb").onclick=function(e){var b=e.target.closest(".choice");if(!b)return;S.cfg.start=b.dataset.c;S.cfg.welcomed=true;save();hero("");$("pk").innerHTML="";
 if(b.dataset.c=="Import"){go("knowledge");$("fi").click()}else if(b.dataset.c=="Pack"){go("knowledge");showPack()}else go("chat")};
 hero("splash");setTimeout(function(){hero(S.cfg.start?"":"onb")},1800);
 var h=(location.hash||"").slice(1);go(N.some(function(n){return n[0]==h})?h:"chat");rc();
