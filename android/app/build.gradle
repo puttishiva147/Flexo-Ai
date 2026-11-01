@@ -23,4 +23,6 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+    // Native PDF text extraction for Knowledge imports.
+    implementation "com.tom-roush:pdfbox-android:2.0.27.0"
 }
