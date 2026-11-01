@@ -17,8 +17,11 @@ const required = [
   "function cleanAssistantText(value)",
   "var kb=context.map(x=>redactSensitive(x.c))",
   "var visibleSources=(x.src||[]).filter",
-  'style="height:46px;width:46px;object-fit:contain;flex:none"',
-  'id="bl" alt="Flexo" style="height:22px"'
+  'class="app-header"',
+  'id="notificationsButton"',
+  'id="settingsButton"',
+  'id="voiceButton"',
+  'id="datahub"'
 ];
 const errors = [];
 for (const item of required) if (!html.includes(item)) errors.push("Missing required implementation marker: " + item);
@@ -39,7 +42,8 @@ if (!html.includes('answer="I can’t produce a reliable answer from your Knowle
 if (!html.includes('content:cleanAssistantText(String(m.c||"")).slice(0,1800)')) errors.push("Previous chat context must be sanitized before reuse");
 if (!html.includes('window.cleanAssistantText=cleanAssistantText')) errors.push("Shared sanitizer must be available to the legacy chat pipeline");
 if (!html.includes("I can’t produce a reliable answer from your Knowledge library until the on-device AI model is loaded.")) errors.push("Knowledge fallback must not expose raw retrieval passages");
-if (!html.includes('id="bl" alt="Flexo" style="height:22px"')) errors.push("Existing Flexo wordmark size must remain unchanged");
+if (!html.includes('id="bl" alt="Flexo"')) errors.push("Flexo wordmark must remain in the S2 header");
+if (!html.includes('["datahub","Data Hub"')) errors.push("Data Hub must remain the fifth primary navigation item");
 
 const sanitizerStart = html.indexOf("function redactSensitive(value){");
 const sanitizerEnd = html.indexOf("window.redactSensitive=redactSensitive;", sanitizerStart);
@@ -94,7 +98,7 @@ for (const file of ["builtin-intelligence.js", "jszip.min.js", "service-worker.j
 const sw = fs.readFileSync("service-worker.js", "utf8");
 try { new vm.Script(sw, { filename: "service-worker.js" }); }
 catch (error) { errors.push("Service worker JavaScript syntax error: " + error.message); }
-if (!sw.includes("flexo-app-shell-v3")) errors.push("Service worker cache version was not bumped");
+if (!sw.includes("flexo-app-shell-v4")) errors.push("Service worker cache version was not bumped");
 if (!sw.includes("https://esm.run") || !sw.includes("https://cdn.jsdelivr.net")) errors.push("Runtime CDN cache allowlist is missing");
 if (!sw.includes(String.raw`/\.(?:m?js)(?:$|\?)/i`)) errors.push("Runtime JavaScript asset matcher is malformed");
 if (!sw.includes('url.pathname.includes("/api/")')) errors.push("Service worker API cache exclusion is missing");
