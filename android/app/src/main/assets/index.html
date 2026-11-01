@@ -610,7 +610,7 @@ $("del").onclick=function(){var b=this;if(b.dataset.s!="1"){b.dataset.s="1";b.te
 
 $("onb").onclick=function(e){var b=e.target.closest(".choice");if(!b)return;S.cfg.start=b.dataset.c;save();hero("");$("pk").innerHTML="";
 if(b.dataset.c=="Import"){go("knowledge");$("fi").click()}else if(b.dataset.c=="Pack"){go("knowledge");showPack()}else go("chat")};
-hero("splash");setTimeout(function(){hero(S.cfg.start?"":"onb")},650);
+hero("splash");setTimeout(function(){hero("")},650);
 var h=(location.hash||"").slice(1);go(N.some(function(n){return n[0]==h})?h:"chat");rc();
 
 /* App event notifications: only events produced by real local app actions are recorded. */
