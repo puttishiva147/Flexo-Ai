@@ -516,15 +516,17 @@ $("ia").onclick=function(){go("settings");var p=$("pv");if(p)p.scrollIntoView()}
 function words(q){return String(q||"").toLowerCase().split(/[^a-z0-9\u0900-\u097f]+/).filter(function(w){return w.length>2})}
 var RETRIEVAL_STOPWORDS={the:1,and:1,for:1,that:1,this:1,with:1,from:1,have:1,what:1,when:1,where:1,which:1,who:1,why:1,how:1,are:1,was:1,were:1,can:1,could:1,would:1,should:1,about:1,tell:1,please:1,into:1,your:1,you:1,does:1,did:1};
 function retrieve(q){
- var w=words(q).filter(function(x){return !RETRIEVAL_STOPWORDS[x]});
+ var query=String(q||"").toLowerCase().trim(),w=words(query).filter(function(x){return !RETRIEVAL_STOPWORDS[x]});
  if(!w.length)return [];
- var r=[];
- S.kb.forEach(function(f){(f.ch||[]).forEach(function(c){
-  var tokens=words(c),counts={};tokens.forEach(function(x){counts[x]=(counts[x]||0)+1});
-  var score=0;w.forEach(function(x){if(counts[x])score+=Math.min(counts[x],3)});
-  if(score>0)r.push({s:score,n:f.name,c:c});
+ var r=[],seen={};
+ S.kb.forEach(function(f){var title=String(f.name||"").toLowerCase(),titleWords=words(title);(f.ch||[]).forEach(function(c){
+  var text=String(c||""),tokens=words(text),counts={};tokens.forEach(function(x){counts[x]=(counts[x]||0)+1});
+  var score=0,matched=0;w.forEach(function(x){if(counts[x]){score+=Math.min(counts[x],3);matched++}if(titleWords.indexOf(x)!==-1)score+=2});
+  if(query.length>8&&text.toLowerCase().indexOf(query)!==-1)score+=8;
+  if(matched===w.length&&w.length>1)score+=3;
+  var key=(f.name||"")+"|"+text;if(score>0&&!seen[key]){seen[key]=true;r.push({s:score,n:f.name,c:text,coverage:matched/Math.max(1,w.length)})}
  })});
- return r.sort(function(a,b){return b.s-a.s}).slice(0,5);
+ return r.sort(function(a,b){return b.s-a.s||b.coverage-a.coverage}).slice(0,8);
 }
 /* Retrieved knowledge is private context. Never turn retrieval metadata or secrets into an answer. */
 function redactKnowledge(text){
