@@ -20,6 +20,11 @@ import android.webkit.WebViewClient
 import android.webkit.WebResourceRequest
 import android.webkit.ValueCallback
 import org.json.JSONObject
+import android.util.Base64
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.text.PDFTextStripper
+import java.io.ByteArrayInputStream
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
@@ -31,6 +36,26 @@ class MainActivity : Activity() {
     private var speechRecognizer: SpeechRecognizer? = null
 
     private inner class FlexoBridge {
+        @JavascriptInterface
+        fun extractPdfText(base64: String): String {
+            return try {
+                if (base64.length > 14_000_000) return "ERROR:PDF_TOO_LARGE"
+                PDFBoxResourceLoader.init(applicationContext)
+                val bytes = Base64.decode(base64, Base64.DEFAULT)
+                if (bytes.size > 10 * 1024 * 1024) return "ERROR:PDF_TOO_LARGE"
+                ByteArrayInputStream(bytes).use { input ->
+                    PDDocument.load(input).use { document ->
+                        if (document.isEncrypted) return "ERROR:PDF_PASSWORD_PROTECTED"
+                        val stripper = PDFTextStripper()
+                        stripper.sortByPosition = true
+                        stripper.getText(document).take(2_500_000)
+                    }
+                }
+            } catch (_: Exception) {
+                "ERROR:PDF_READ_FAILED"
+            }
+        }
+
         @JavascriptInterface
         fun hapticTick() {
             try {
