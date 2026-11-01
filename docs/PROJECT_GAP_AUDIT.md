@@ -7,7 +7,7 @@ Repository: https://github.com/puttishiva147/Flexo-Ai
 
 | Area | Current implementation | Status |
 |---|---|---|
-| Navigation | Chat, Knowledge, Tools, History, Settings, Data Hub | Implemented |
+| Navigation | Five-item floating dock: Chat, Knowledge, Tools, History, Data Hub; Settings remains in the top-right gear | Implemented |
 | Local chat | Built-in response catalogue and local knowledge answer extraction | Implemented, not a generative model |
 | Conversation context | Recent user turns contribute to local knowledge retrieval | Implemented |
 | Knowledge import | TXT, MD, CSV, JSON; conversation export parser supports recognised ZIP/JSON/TXT/MD/CSV/HTML inputs | Implemented with format limits |
@@ -60,6 +60,10 @@ CI build success does not validate microphone recognition, Android file picker b
 - Restricted WebView navigation to bundled local assets and cleaned up pending chooser/export callbacks on activity destruction.
 - Rewrote outdated Quick AI setup documents so absent services are not represented as working.
 - Validated the embedded main JavaScript syntax with a JavaScript parser.
+- Matched the mobile chat layout to the supplied screenshot: dark charcoal canvas, champagne accents, header logo/actions, welcome bubbles, message composer and floating five-item dock.
+- Kept Settings in the top-right gear, matching the supplied reference, while retaining all settings controls.
+- Added small-screen and short-screen layout handling, Android system-bar colors and keyboard resize behavior.
+- Corrected Settings capability descriptions so backup restore, local-only AI, storage limitations and the absent Quick AI overlay are described accurately.
 
 ## Acceptance status
 
