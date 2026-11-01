@@ -1,6 +1,11 @@
 package com.flexo.ai
 
 import android.app.Activity
+import android.Manifest
+import android.content.pm.PackageManager
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.content.Intent
 import android.os.Bundle
 import android.os.Build
@@ -13,6 +18,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.ValueCallback
+import org.json.JSONObject
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
@@ -20,6 +26,8 @@ class MainActivity : Activity() {
     private var pendingExportJson: String? = null
     private val fileChooserRequestCode = 4107
     private val exportRequestCode = 4108
+    private val voiceRequestCode = 4109
+    private var speechRecognizer: SpeechRecognizer? = null
 
     private inner class FlexoBridge {
         @JavascriptInterface
@@ -37,6 +45,17 @@ class MainActivity : Activity() {
                     }
                 }
             } catch (_: Exception) { }
+        }
+
+        @JavascriptInterface
+        fun startVoiceInput() {
+            runOnUiThread {
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), voiceRequestCode)
+                } else {
+                    startNativeVoiceRecognition()
+                }
+            }
         }
 
         @JavascriptInterface
@@ -96,6 +115,61 @@ class MainActivity : Activity() {
         web.loadUrl("file:///android_asset/index.html")
     }
 
+    private fun voiceCallback(text: String?, error: String?) {
+        val js = if (text != null) {
+            "window.FlexoVoiceResult && window.FlexoVoiceResult(${JSONObject.quote(text)}, null)"
+        } else {
+            "window.FlexoVoiceResult && window.FlexoVoiceResult(null, ${JSONObject.quote(error ?: \"Voice input failed\")})"
+        }
+        if (::web.isInitialized) web.evaluateJavascript(js, null)
+    }
+
+    private fun startNativeVoiceRecognition() {
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            voiceCallback(null, "Speech recognition is not available on this device.")
+            return
+        }
+        try {
+            speechRecognizer?.destroy()
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this).also { recognizer ->
+                recognizer.setRecognitionListener(object : RecognitionListener {
+                    override fun onReadyForSpeech(params: Bundle?) = Unit
+                    override fun onBeginningOfSpeech() = Unit
+                    override fun onRmsChanged(rmsdB: Float) = Unit
+                    override fun onBufferReceived(buffer: ByteArray?) = Unit
+                    override fun onEndOfSpeech() = Unit
+                    override fun onEvent(eventType: Int, params: Bundle?) = Unit
+                    override fun onPartialResults(partialResults: Bundle?) = Unit
+                    override fun onError(error: Int) { voiceCallback(null, "Voice recognition stopped. Please try again.") }
+                    override fun onResults(results: Bundle?) {
+                        val spoken = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+                        if (spoken.isNullOrBlank()) voiceCallback(null, "No speech was detected.") else voiceCallback(spoken, null)
+                    }
+                })
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, java.util.Locale.getDefault().toLanguageTag())
+                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
+                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+                }
+                recognizer.startListening(intent)
+            }
+        } catch (_: Exception) {
+            voiceCallback(null, "Could not start voice recognition.")
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == voiceRequestCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startNativeVoiceRecognition()
+            } else {
+                voiceCallback(null, "Microphone permission was not granted.")
+            }
+        }
+    }
+
     @Deprecated("Deprecated in Android")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -130,6 +204,8 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        speechRecognizer?.destroy()
+        speechRecognizer = null
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
     }
