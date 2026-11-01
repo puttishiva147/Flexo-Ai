@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install icon processing dependency
-        run: python -m pip install --disable-pip-version-check Pillow
+        run: python -m pip install --disable-pip-version-check Pillow CairoSVG
       - name: Generate transparent official logo assets
         run: python android/tools/generate_icons.py
       - name: Set up Gradle
