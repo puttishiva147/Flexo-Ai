@@ -117,9 +117,11 @@ class MainActivity : Activity() {
 
     private fun voiceCallback(text: String?, error: String?) {
         val js = if (text != null) {
-            "window.FlexoVoiceResult && window.FlexoVoiceResult(${JSONObject.quote(text)}, null)"
+            val encoded = JSONObject.quote(text)
+            "window.FlexoVoiceResult && window.FlexoVoiceResult($encoded, null)"
         } else {
-            "window.FlexoVoiceResult && window.FlexoVoiceResult(null, ${JSONObject.quote(error ?: "Voice input failed")})"
+            val encodedError = JSONObject.quote(error ?: "Voice input failed")
+            "window.FlexoVoiceResult && window.FlexoVoiceResult(null, $encodedError)"
         }
         if (::web.isInitialized) web.evaluateJavascript(js, null)
     }
