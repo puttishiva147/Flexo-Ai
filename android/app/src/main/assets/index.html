@@ -166,6 +166,14 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
 }
 
 
+/* Floating dock: fixed overlay so showing it never reflows the chat or composer. */
+#tb.tab{position:fixed!important;left:50%!important;bottom:calc(env(safe-area-inset-bottom,0px) + 12px)!important;width:min(680px,calc(100vw - 32px))!important;min-height:76px;box-sizing:border-box;z-index:90;display:flex!important;align-items:center;gap:2px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))!important;border:1px solid rgba(227,203,166,.28);border-radius:40px;background:rgba(20,19,20,.94);backdrop-filter:blur(18px);box-shadow:0 12px 36px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,239,215,.08)}
+#tb.tab button{min-width:0;flex:1;border-radius:28px;padding:8px 2px;gap:3px;font-size:11px}
+#tb.tab button.on{background:radial-gradient(ellipse at center,rgba(227,203,166,.23),rgba(227,203,166,.04));color:var(--ac)}
+#tb.tab svg{width:23px;height:23px}
+#tb.tab.dock-hidden{opacity:0!important;pointer-events:none!important;transform:translate(-50%,26px)!important;visibility:hidden;transition:opacity .2s ease,transform .2s ease,visibility .2s!important}
+#tb.tab.dock-visible{opacity:1!important;pointer-events:auto!important;visibility:visible;transform:translate(-50%,0)!important;transition:opacity .2s ease,transform .2s ease,visibility .2s!important}
+@media(min-width:900px){#tb.tab{display:none!important}}
 /* Reference-matched header, real app event centre, Data Hub and gesture dock. */
 .app-header{height:88px;min-height:88px;display:flex;align-items:center;justify-content:space-between;padding:8px 22px;border-bottom:1px solid rgba(227,203,166,.13);background:rgba(8,8,10,.88);backdrop-filter:blur(16px);position:relative;z-index:4}
 .brand-lockup{display:flex;align-items:center;gap:12px;min-width:0}.brand-lockup #bi{width:76px;height:68px;object-fit:contain;flex:none}.brand-lockup #bl{width:auto;height:34px;max-width:150px;object-fit:contain}.brand-divider{height:42px;width:1px;background:rgba(227,203,166,.24)}
