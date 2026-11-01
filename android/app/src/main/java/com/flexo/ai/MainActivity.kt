@@ -53,7 +53,7 @@ class MainActivity : Activity() {
                 if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), voiceRequestCode)
                 } else {
-                    startNativeVoiceRecognition()
+                    this@MainActivity.startNativeVoiceRecognition()
                 }
             }
         }
@@ -119,7 +119,7 @@ class MainActivity : Activity() {
         val js = if (text != null) {
             "window.FlexoVoiceResult && window.FlexoVoiceResult(${JSONObject.quote(text)}, null)"
         } else {
-            "window.FlexoVoiceResult && window.FlexoVoiceResult(null, ${JSONObject.quote(error ?: \"Voice input failed\")})"
+            "window.FlexoVoiceResult && window.FlexoVoiceResult(null, ${JSONObject.quote(error ?: "Voice input failed")})"
         }
         if (::web.isInitialized) web.evaluateJavascript(js, null)
     }
