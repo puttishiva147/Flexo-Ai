@@ -1,6 +1,6 @@
 # Flexo AI
 
-Flexo AI is currently an Android WebView application with a local-first chat interface, built-in response catalogue, searchable user knowledge library, conversation history, settings, notifications and local JSON backup/restore.
+Flexo AI is currently an Android WebView application with a local-first chat interface, searchable user knowledge library, conversation history, settings, notifications and local JSON backup/restore.
 
 Repository: https://github.com/puttishiva147/Flexo-Ai
 
@@ -16,7 +16,7 @@ The workflow builds a debug APK. It is not a production-signed release.
 ## Implemented in the current app
 
 - Six navigation destinations: Chat, Knowledge, Tools, History, Settings and Data Hub.
-- Local built-in answer catalogue and keyword-based retrieval from imported knowledge.
+- Keyword-based retrieval and answer extraction from imported knowledge; no preset reply catalogue is loaded.
 - Conversation-aware retrieval that includes recent user turns when searching the local library.
 - Local chat and knowledge persistence using WebView localStorage.
 - Knowledge imports: TXT, Markdown, CSV and JSON; conversation-export imports also support ZIP/JSON/TXT/MD/CSV/HTML where the selected parser recognises the format.
@@ -29,7 +29,7 @@ The workflow builds a debug APK. It is not a production-signed release.
 
 ## Important capability boundaries
 
-- **No production AI backend is included in this repository.** The main chat does not call a hosted generative model. It returns built-in responses or extracts relevant sentences from the local knowledge library.
+- **No production AI backend or bundled generative model is included.** Chat searches the user's local Knowledge Library and extracts relevant passages. It does not generate unrestricted answers; when evidence is insufficient, it says so rather than inventing a reply.
 - **No on-device LLM is bundled.** Offline mode supports the built-in answer catalogue and local knowledge search, not unrestricted generative reasoning.
 - **No image-understanding model is bundled.** Images can be attached/stored in a conversation, but the app cannot interpret their contents offline.
 - **PDF extraction is not implemented.** Convert PDF text to TXT/MD before importing.
