@@ -18,7 +18,7 @@ if not ICON_SVG.is_file():
     raise SystemExit(f"Missing official vector icon: {ICON_SVG}")
 
 # Render the SVG at high resolution, preserving its transparency and artwork.
-png_bytes = cairosvg.svg2png(url=str(ICON_SVG), output_width=512, output_height=512)
+png_bytes = cairosvg.svg2png(url=str(ICON_SVG), output_width=410)
 logo = Image.open(BytesIO(png_bytes)).convert("RGBA")
 
 # Center the original aspect ratio inside a transparent square; do not crop or recolour it.
