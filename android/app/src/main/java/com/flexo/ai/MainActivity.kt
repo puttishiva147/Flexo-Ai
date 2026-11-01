@@ -17,6 +17,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.webkit.WebResourceRequest
 import android.webkit.ValueCallback
 import org.json.JSONObject
 
@@ -88,7 +89,19 @@ class MainActivity : Activity() {
         web.settings.allowContentAccess = true
         web.settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
         web.addJavascriptInterface(FlexoBridge(), "FlexoAndroid")
-        web.webViewClient = WebViewClient()
+        web.webViewClient = object : WebViewClient() {
+            private fun allowLocalAsset(url: String?): Boolean =
+                url == "about:blank" || (url?.startsWith("file:///android_asset/") == true)
+
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                return !allowLocalAsset(request?.url?.toString())
+            }
+
+            @Deprecated("Deprecated in Android")
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                return !allowLocalAsset(url)
+            }
+        }
         web.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 view: WebView?,
@@ -206,6 +219,9 @@ class MainActivity : Activity() {
     override fun onDestroy() {
         speechRecognizer?.destroy()
         speechRecognizer = null
+        filePathCallback?.onReceiveValue(null)
+        filePathCallback = null
+        pendingExportJson = null
         if (::web.isInitialized) web.destroy()
         super.onDestroy()
     }
