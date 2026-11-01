@@ -69,7 +69,8 @@ CI build success does not validate microphone recognition, Android file picker b
 
 - Repository code changes: committed.
 - JavaScript syntax parse: passed.
-- Android CI build after latest changes: pending verification.
+- Android CI build for version 0.2.1 / versionCode 2: passed (GitHub Actions run 41311524320).
+- Debug APK artifact: approximately 1.42 MB; production signing is not configured/verified.
 - Physical-device tests: not run.
 - Real generative AI backend: not implemented.
 - Bundled offline LLM: not implemented.
