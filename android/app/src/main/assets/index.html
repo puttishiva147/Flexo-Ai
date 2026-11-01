@@ -491,7 +491,7 @@ function save(){try{localStorage.setItem("flexo_v1",JSON.stringify({chats:S.cfg.
 function chat(){return S.chats.filter(function(c){return c.id==S.cur})[0]}
 function go(id){cur=id;document.querySelectorAll(".s").forEach(function(e){e.classList.toggle("on",e.id==id)});
 document.querySelectorAll(".nav button,.tab button").forEach(function(b){b.classList.toggle("on",b.dataset.id==id)});
-var bl=$("bl"),bt=$("bt");bl.src=WORD;$("bi").src=ICON;$("si").src=ICON;$("nc2").style.display=id=="chat"?"":"none";bl.style.display="";bt.textContent="";
+var bl=$("bl"),bt=$("bt"),bi=$("bi"),si=$("si"),nc2=$("nc2");if(bl){bl.src=WORD;bl.style.display=""}if(bi)bi.src=ICON;if(si)si.src=ICON;if(nc2)nc2.style.display=id==="chat"?"":"none";if(bt)bt.textContent="";
 if(id=="knowledge")rk();if(id=="history")rh();if(id=="settings")rs();if(id=="datahub")renderDataHub();
 try{location.hash=id}catch(e){}}
 function mk(c){c.innerHTML=N.map(function(n){return '<button type="button" data-id="'+n[0]+'" aria-label="'+n[1]+'" title="'+n[1]+'"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="'+n[2]+'"/></svg><span>'+n[1]+'</span></button>'}).join("");c.onclick=function(e){var b=e.target.closest("button");if(b)go(b.dataset.id)}}
