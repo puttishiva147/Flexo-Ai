@@ -638,11 +638,7 @@ $("notificationsButton").onclick=openNotices;$("closeNotifications").onclick=clo
 function renderDataHub(){var k=$("dhKnowledgeCount"),c=$("dhChatCount"),z=$("dhStorage");if(k)k.textContent=String(S.kb.length);if(c)c.textContent=String(S.cfg.saveHist?S.chats.length:0);if(z){try{var raw=localStorage.getItem("flexo_v1")||"";var notices=localStorage.getItem(FLEXO_NOTICE_KEY)||"";z.textContent=((raw.length+notices.length)*2/1024).toFixed(1)+" KB"}catch(e){z.textContent="Unavailable"}}}
 $("dhOpenKnowledge").onclick=$("dhKnowledge").onclick=function(){go("knowledge")};$("dhOpenHistory").onclick=$("dhHistory").onclick=function(){go("history")};$("dhRefresh").onclick=renderDataHub;$("dhImport").onclick=function(){go("knowledge");$("fi").click()};$("dhExport").onclick=function(){$("ex").click()};$("dhSettings").onclick=function(){go("settings")};
 function setDock(visible){var n=$("tb");if(!n)return;n.classList.toggle("dock-visible",!!visible);n.classList.toggle("dock-hidden",!visible)}
-setDock(false);var dockPointerY=null,dockPointerFromEdge=false;
-document.addEventListener("pointerdown",function(e){if(e.pointerType==="mouse")return;dockPointerY=e.clientY;dockPointerFromEdge=e.clientY>window.innerHeight-140;if(!dockPointerFromEdge&&!e.target.closest("#tb"))setDock(false)},{passive:true});
-document.addEventListener("pointerup",function(e){if(dockPointerY===null)return;var delta=dockPointerY-e.clientY;if(dockPointerFromEdge&&delta>36)setDock(true);else if(delta< -36&&dockPointerY>window.innerHeight-180)setDock(false);dockPointerY=null;dockPointerFromEdge=false},{passive:true});
-document.addEventListener("pointercancel",function(){dockPointerY=null;dockPointerFromEdge=false},{passive:true});
-$("tb").addEventListener("click",function(e){if(e.target.closest("button"))setTimeout(function(){setDock(false)},650)});
+setDock(true); /* Keep the primary navigation dock visible at all times. */
 /* Keep the existing nav and chat logic intact; add a real Data Hub refresh after navigation. */
 var originalGo=go;go=function(id){originalGo(id);if(id==="datahub")renderDataHub()};
 /* Settings controls persist through the existing flexo_v1 configuration object. */
