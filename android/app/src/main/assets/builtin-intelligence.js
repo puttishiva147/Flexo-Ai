@@ -228,6 +228,7 @@ function boot(){
   el("lexGenerate").addEventListener("click",async function(){
     var base=endpoint(),prompt=el("lexPrompt").value.trim(),button=el("lexGenerate");
     if(!base){setStatus("Add your GPU backend HTTPS URL in Inference server connection.");return}
+    if(!token()){setStatus("Add your backend access token in Inference server connection.");return}
     if(!prompt){setStatus("Write a video prompt first.");el("lexPrompt").focus();return}
     if((mode==="i2va"||mode==="fl2va")&&!el("lexFirst").files[0]){setStatus("Choose a first-frame image.");return}
     if(mode==="fl2va"&&!el("lexLast").files[0]){setStatus("Choose a last-frame image.");return}
