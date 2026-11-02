@@ -55,8 +55,8 @@ class JobRequest(BaseModel):
     prompt: str = Field(min_length=1, max_length=3000)
     mode: str = Field(pattern="^(text|image)$")
     image_data_url: str | None = None
-    duration_seconds: int = Field(default=5, ge=5, le=10)
-    resolution: str = Field(default="720p", pattern="^(480p|720p)$")
+    duration_seconds: int = Field(default=5, ge=5, le=5)
+    resolution: str = Field(default="720p", pattern="^720p$")
 
 
 def decode_image(data_url: str, job_id: str) -> Path:
