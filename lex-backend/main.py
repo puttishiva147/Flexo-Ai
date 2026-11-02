@@ -11,7 +11,7 @@ from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-ROOT = Path(os.getenv("LEX_DATA_DIR", "/data/lex")).resolve()
+ROOT = Path(os.getenv("LEX_DATA_DIR", str(Path(__file__).parent / "data"))).resolve()
 ROOT.mkdir(parents=True, exist_ok=True)
 MODEL_REPO = os.getenv("MODEL_REPO", "Pika-Labs/Pika-H3-Flex")
 MODEL_REVISION = os.getenv("MODEL_REVISION", "0ddf55ad7067ca1e76812253bd7b4600df87f759")
