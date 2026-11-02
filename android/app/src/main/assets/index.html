@@ -915,11 +915,13 @@ $("voiceButton").onclick=function(){var b=this;b.classList.add("listening");if(w
 </script><script src="flexo-ai-studio.js"></script><script>
 (function(){
  function clean(){
-  var root=document.body;if(!root)return;
-  Array.prototype.slice.call(root.childNodes).forEach(function(n){
-   if(n.nodeType===3){
-    var t=n.nodeValue||"";
-    if(t.indexOf("/* FLEXO UI CONSISTENCY LOCK")>=0||(/\.brand-lockup\s*\{/.test(t)&&/--fx-brand-mark|#bi\s*\{/.test(t)))n.parentNode&&n.parentNode.removeChild(n);
+  if(!document.body)return;
+  var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),nodes=[];
+  while(walker.nextNode())nodes.push(walker.currentNode);
+  nodes.forEach(function(n){
+   var t=n.nodeValue||"";
+   if((t.indexOf("/*")>=0&&t.indexOf("brand-lockup")>=0)||(t.indexOf("--fx-brand-mark")>=0&&t.indexOf("object-fit")>=0)){
+    n.parentNode&&n.parentNode.removeChild(n);
    }
   });
  }
