@@ -30,4 +30,35 @@ syncSettings();
 var localSend=window.send;
 window.send=async function(text){var prompt=String(text||"").trim();if(!gateway()){if(typeof localSend==="function")return localSend(prompt);return;}if(window.busy||!prompt)return;if(window.PA&&PA.length){if(typeof localSend==="function")return localSend(prompt);return;}S.cfg.welcomed=true;var c=typeof window.chat==="function"?chat():null;if(!c){c={id:Date.now(),t:prompt.slice(0,44),m:[]};S.chats.unshift(c);S.cur=c.id;}c=chat();c.m.push({r:"user",c:prompt,att:[],fx:[],img:[]});var assistant={r:"assistant",c:""};c.m.push(assistant);window.busy=true;window.t0=Date.now();if(typeof window.save==="function")save();if(typeof window.rc==="function")rc();try{var history=c.m.filter(function(m){return m.r==="user"||m.r==="assistant";}).slice(-18).map(function(m){return{role:m.r==="assistant"?"assistant":"user",content:String(m.c||"").slice(0,8000)};}).filter(function(m){return m.content;});var knowledge="";if(S.cfg.useKb&&typeof window.retrieve==="function"){try{var hits=retrieve(prompt);knowledge=(hits||[]).slice(0,6).map(function(x){return String((typeof window.redactKnowledge==="function"?redactKnowledge(x.c||x.text||x.content||x.chunk||""):(x.c||x.text||x.content||x.chunk||"")) );}).filter(Boolean).join("\n\n").slice(0,9000);}catch(_){}}var response=await fetch(gateway()+"/api/chat",{method:"POST",headers:headers(true),body:JSON.stringify({messages:history,knowledge_context:knowledge,conversation_id:String(c.id)})});var data=await response.json().catch(function(){return {};});if(!response.ok)throw new Error(data.detail||data.error||("Request failed ("+response.status+")."));var answer=data.reply||data.message||data.content||(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content);if(typeof answer!=="string"||!answer.trim())throw new Error("The AI service returned an empty response.");assistant.c=typeof window.sanitizeAssistantResponse==="function"?sanitizeAssistantResponse(answer):answer;}catch(err){assistant.c="I couldn’t reach Flexo’s online AI service. "+err.message+"\n\nYour conversation is still saved on this device. Check the backend connection in Settings.";}finally{window.busy=false;window.ab=null;if(typeof window.save==="function")save();if(typeof window.rc==="function")rc();}};
 if(typeof window.go==="function"){var oldGo=window.go;window.go=function(id){oldGo(id);if(id==="settings")syncSettings();};}
+
+/* Clean first-run chat and give Video Studio its own primary navigation destination. */
+(function(){
+  var oldRender=window.rc;
+  if(typeof oldRender==="function"){
+    window.rc=function(){
+      oldRender();
+      var current=typeof window.chat==="function"?window.chat():null;
+      var messages=current&&Array.isArray(current.m)?current.m:[];
+      if(!messages.length){
+        var list=document.getElementById("ms");
+        if(list)list.replaceChildren();
+      }
+    };
+    window.rc();
+  }
+  var videoPath="M3 7.5h11a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2ZM16 10l7-3v10l-7-3";
+  ["tb","sn"].forEach(function(id){
+    var nav=document.getElementById(id);
+    if(!nav||nav.querySelector('[data-id="fx-video-studio"]'))return;
+    var b=document.createElement("button");
+    b.type="button";b.dataset.id="fx-video-studio";
+    b.setAttribute("aria-label","Video Studio");b.title="Video Studio";
+    b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="'+videoPath+'"/></svg><span>Video</span>';
+    nav.appendChild(b);
+  });
+  var css=document.createElement("style");
+  css.textContent="#tb button{flex:1 1 16.666%;min-width:0}#sn [data-id=fx-video-studio]{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:12px;color:var(--mu);text-align:left}#sn [data-id=fx-video-studio] svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}#ms:empty{min-height:1px}#fx-video-studio{padding-bottom:110px}";
+  document.head.appendChild(css);
+})();
+
 })();
