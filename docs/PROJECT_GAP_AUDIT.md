@@ -25,12 +25,15 @@ Repository: https://github.com/puttishiva147/Flexo-Ai
 ## Confirmed missing or incomplete systems
 
 ### P0 — Real AI engine
-The main chat's `send()` flow does not make a network request. It uses `FlexoBuiltin.respond()` and local knowledge retrieval. There is no bundled generative model and no deployed API in this repository.
+The feature branch now includes an optional online chat client and a FastAPI gateway contract. The gateway is not deployed or configured yet, so the app continues to use its local fallback until a gateway URL/token and server-side chat provider are configured. No model weights are bundled in the APK.
 
 **Required before calling it a full AI assistant:** implement a real provider-neutral request layer, server-side secret handling, explicit online/offline mode, timeout/retry/error handling, context-window limits, cancellation, and end-to-end tests against a deployed backend. Do not claim this works until the service is deployed and verified.
 
 ### P0 — Full offline generative AI
 No local LLM runtime or model weights are included. Current offline features are the built-in answer catalogue and local keyword retrieval. A local model requires a separately selected model/runtime, device-memory/performance evaluation, model distribution strategy, and user-visible download/storage controls.
+
+### P0 — AI Video Studio
+The feature branch adds Text-to-Video and Image-to-Video screens, request submission, job polling, preview and download handling. A private GPU worker is not included or deployed; video generation is not live until a worker implementing `POST /jobs` and `GET /jobs/{id}` is configured behind the gateway.
 
 ### P1 — File extraction
 The main knowledge import supports TXT, MD, CSV and JSON. PDF/DOCX/XLSX/PPTX extraction is not implemented. The conversation import parser has limited format-specific support and does not guarantee complete extraction from every export format.
@@ -78,3 +81,13 @@ CI build success does not validate microphone recognition, Android file picker b
 - Production signing: not configured/verified.
 
 Only mark the remaining items complete after implementation and evidence-based tests.
+
+
+## Feature branch additions (2026-11-02)
+
+- Added optional online chat integration while retaining the current local chat/knowledge fallback.
+- Added in-app Text-to-Video and Image-to-Video Studio with status polling and video preview/download.
+- Added a FastAPI gateway that keeps provider credentials server-side and forwards video jobs to a separate private GPU worker.
+- Added Android INTERNET permission and loaded the Studio integration script from bundled assets.
+- JavaScript syntax check for the new client script passed.
+- Backend deployment, provider configuration, GPU worker implementation/deployment, physical-device testing and final APK build remain outstanding.

@@ -1,10 +1,12 @@
-name: Build Flexo AI APK # Local-only build with no network permission
+name: Build Flexo AI APK # Debug APK build for the local app and optional secure Flexo gateway integration
 
 on:
   push:
-    branches: [main, feature/built-in-intelligence-ui]
+    branches: [main, feature/built-in-intelligence-ui, feature/ai-chat-knowledge-video-studio]
     paths:
       - 'android/**'
+      - 'backend/**'
+      - 'video-worker/**'
       - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
@@ -39,6 +41,14 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Validate Flexo gateway Python syntax
+        run: python -m py_compile backend/app.py video-worker/app.py
+      - name: Set up Node.js for client syntax check
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate AI Studio client JavaScript
+        run: node --check android/app/src/main/assets/flexo-ai-studio.js
       - name: Build APK
         working-directory: android
         run: gradle assembleDebug --stacktrace
