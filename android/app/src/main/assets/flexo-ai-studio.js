@@ -41,7 +41,7 @@ if(typeof window.go==="function"){var oldGo=window.go;window.go=function(id){old
       var messages=current&&Array.isArray(current.m)?current.m:[];
       if(!messages.length){
         var list=document.getElementById("ms");
-        if(list)list.replaceChildren();
+        if(list){list.replaceChildren();if(typeof window.home==="function")list.appendChild(window.home());}
       }
     };
     window.rc();
