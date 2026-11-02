@@ -106,15 +106,15 @@ class MainActivity : Activity() {
     @Suppress("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = android.graphics.Color.rgb(8, 8, 10)
-        window.navigationBarColor = android.graphics.Color.rgb(8, 8, 10)
+        window.statusBarColor = android.graphics.Color.rgb(11, 12, 14)
+        window.navigationBarColor = android.graphics.Color.rgb(11, 12, 14)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isStatusBarContrastEnforced = false
             window.isNavigationBarContrastEnforced = false
         }
         window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         web = WebView(this)
-        web.setBackgroundColor(android.graphics.Color.rgb(8, 8, 10))
+        web.setBackgroundColor(android.graphics.Color.rgb(11, 12, 14))
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
         web.settings.allowFileAccess = true
