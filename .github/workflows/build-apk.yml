@@ -2,7 +2,7 @@ name: Build Flexo AI APK # Local-only build with no network permission
 
 on:
   push:
-    branches: [main, feature/built-in-intelligence-ui]
+    branches: [main, feature/built-in-intelligence-ui, fix/fresh-chat-vector-logo]
     paths:
       - 'android/**'
       - '.github/workflows/build-apk.yml'
@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install icon processing dependency
-        run: python -m pip install --disable-pip-version-check Pillow
+        run: python -m pip install --disable-pip-version-check Pillow CairoSVG
       - name: Generate transparent official logo assets
         run: python android/tools/generate_icons.py
       - name: Set up Gradle

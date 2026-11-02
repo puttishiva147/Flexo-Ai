@@ -8,7 +8,7 @@ Repository: https://github.com/puttishiva147/Flexo-Ai
 | Area | Current implementation | Status |
 |---|---|---|
 | Navigation | Five-item floating dock: Chat, Knowledge, Tools, History, Data Hub; Settings remains in the top-right gear | Implemented |
-| Local chat | Built-in response catalogue and local knowledge answer extraction | Implemented, not a generative model |
+| Local chat | Local knowledge retrieval and answer extraction; preset reply catalogue no longer loaded | Implemented, not a generative model |
 | Conversation context | Recent user turns contribute to local knowledge retrieval | Implemented |
 | Knowledge import | TXT, MD, CSV, JSON; conversation export parser supports recognised ZIP/JSON/TXT/MD/CSV/HTML inputs | Implemented with format limits |
 | Knowledge storage | WebView localStorage | Implemented; quota-limited |
@@ -25,7 +25,7 @@ Repository: https://github.com/puttishiva147/Flexo-Ai
 ## Confirmed missing or incomplete systems
 
 ### P0 — Real AI engine
-The main chat's `send()` flow does not make a network request. It uses `FlexoBuiltin.respond()` and local knowledge retrieval. There is no bundled generative model and no deployed API in this repository.
+The main chat's `send()` flow does not make a network request. It uses local knowledge retrieval and passage extraction only. The preset `FlexoBuiltin` response catalogue is no longer loaded or called. There is no bundled generative model and no deployed API in this repository.
 
 **Required before calling it a full AI assistant:** implement a real provider-neutral request layer, server-side secret handling, explicit online/offline mode, timeout/retry/error handling, context-window limits, cancellation, and end-to-end tests against a deployed backend. Do not claim this works until the service is deployed and verified.
 
@@ -51,6 +51,10 @@ Local app data is not encrypted at the application layer. There is no user accou
 CI build success does not validate microphone recognition, Android file picker behavior, storage quota, navigation touch behavior, backup restore on-device, or OEM-specific WebView behavior. These require physical-device tests.
 
 ## Changes made in this update
+
+- Removed the built-in preset-reply script from the active chat runtime and removed its call from `send()`.
+- Added a first-chat introduction explaining local Knowledge-based operation and capability limits.
+- New Chat clears pending attachments and the composer while leaving saved conversations in History.
 
 - Added validated JSON backup restore controls in Settings and Data Hub.
 - Restore preserves current data if the file is invalid or the device cannot save the restored data.
