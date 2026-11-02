@@ -40,6 +40,7 @@ class MainActivity : Activity() {
     private val notificationRequestCode = 4110
     private val notificationChannelId = "flexo_updates"
     private var speechRecognizer: SpeechRecognizer? = null
+    @Volatile private var appInBackground = false
 
     private inner class FlexoBridge {
         @JavascriptInterface
@@ -75,6 +76,7 @@ class MainActivity : Activity() {
         @JavascriptInterface
         fun showNotification(title: String, message: String) {
             runOnUiThread {
+                if (!appInBackground) return@runOnUiThread
                 createNotificationChannel()
                 if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return@runOnUiThread
                 val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -194,6 +196,16 @@ class MainActivity : Activity() {
         web.loadUrl("file:///android_asset/index.html")
     }
 
+
+    override fun onPause() {
+        appInBackground = true
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        appInBackground = false
+    }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
