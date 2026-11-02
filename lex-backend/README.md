@@ -10,7 +10,7 @@ Use a dedicated NVIDIA GPU host. The official inference package is tested on an 
 
 Build the image with Docker, then run it on a GPU host with the NVIDIA container runtime. Publish port 8000 behind HTTPS. Set LEX_API_KEY to a long random secret, set HF_TOKEN if Hugging Face authentication is required, and mount persistent volumes at /root/.cache/huggingface and /data/lex. Never commit either secret to GitHub or put them in the Android APK.
 
-Set LEX_CORS_ORIGINS to the exact app origins when known. For Android WebView local assets, test the file origin on the target device. Keep the service behind HTTPS and keep the API key private.
+Set LEX_CORS_ORIGINS to the exact app origins when known. Android WebView local assets can send a null origin; allow `null` or retain wildcard CORS (without credentials) for that client. Keep the service behind HTTPS and keep the API key private. The API refuses job/status/video requests until LEX_API_KEY is configured.
 
 ## API
 
@@ -19,7 +19,7 @@ Set LEX_CORS_ORIGINS to the exact app origins when known. For Android WebView lo
 - GET /v1/jobs/{id} — queued/running/completed/failed status.
 - GET /v1/jobs/{id}/video — completed MP4.
 
-The optional LEX_API_KEY is enforced as a Bearer token. Job state is in process memory; completed files and model cache live on persistent volumes. Use one worker process per GPU; this implementation intentionally serializes inference requests.
+LEX_API_KEY is required and enforced as a Bearer token. Set LEX_CPU_OFFLOAD=true to enable the official CLI's CPU-offload mode; it reduces sampling VRAM at the cost of substantial host RAM and transfer time. Job state is in process memory; completed files and model cache live on persistent volumes. Use one worker process per GPU; this implementation intentionally serializes inference requests.
 
 ## Model and license notices
 
