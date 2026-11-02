@@ -39,6 +39,14 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Validate Flexo gateway Python syntax
+        run: python -m py_compile backend/app.py
+      - name: Set up Node.js for client syntax check
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate AI Studio client JavaScript
+        run: node --check android/app/src/main/assets/flexo-ai-studio.js
       - name: Build APK
         working-directory: android
         run: gradle assembleDebug --stacktrace
