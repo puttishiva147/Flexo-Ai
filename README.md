@@ -43,7 +43,7 @@ The workflow builds a debug APK. It is not a production-signed release.
 
 ## Permissions
 
-The Android manifest declares microphone permission for voice input and vibration for haptic feedback. Android will still ask the user for microphone permission at runtime.
+The Android manifest declares INTERNET permission for the configured Flexo gateway, microphone permission for voice input, and vibration for haptic feedback. Android will still ask the user for microphone permission at runtime.
 
 ## Security notes
 
