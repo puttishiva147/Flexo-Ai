@@ -1,8 +1,8 @@
-name: Build Flexo AI APK # Local-only build with no network permission
+name: Build Flexo AI APK # Debug APK build for the local app and optional secure Flexo gateway integration
 
 on:
   push:
-    branches: [main, feature/built-in-intelligence-ui]
+    branches: [main, feature/built-in-intelligence-ui, feature/ai-chat-knowledge-video-studio]
     paths:
       - 'android/**'
       - '.github/workflows/build-apk.yml'
