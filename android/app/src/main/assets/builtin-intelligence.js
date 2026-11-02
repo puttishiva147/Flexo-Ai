@@ -150,7 +150,7 @@ function boot(){
     "<div class='lex-head'><div class='lex-mark'><div class='lex-mark-icon'>L</div><div><h1 style='margin:0;font-size:28px;letter-spacing:-.04em'>Lex</h1><p class='lex-sub'>Cinematic video creation inside Flexo AI</p></div></div><span class='lex-beta'>BETA</span></div>",
     "<div class='lex-layout'>",
     "<div class='lex-panel'><span class='lex-label'>GENERATION MODE</span><div class='lex-modes' id='lexModes'>",
-    "<button class='lex-mode active' data-mode='t2va'>Text to Video</button><button class='lex-mode' data-mode='i2va'>Image to Video</button><button class='lex-mode' data-mode='fl2va'>First + Last Frame</button><button class='lex-mode' data-mode='ref2va'>Reference Guided</button>",
+    "<button class='lex-mode active' data-mode='t2va'>Text to Video</button><button class='lex-mode' data-mode='i2va'>First Frame</button><button class='lex-mode' data-mode='l2va'>Last Frame</button><button class='lex-mode' data-mode='fl2va'>First + Last</button><button class='lex-mode' data-mode='ref2va'>Reference Guided</button>",
     "</div><label class='lex-label' for='lexPrompt'>DESCRIBE YOUR VIDEO</label><textarea id='lexPrompt' class='lex-prompt' maxlength='8000' placeholder='Describe the scene, camera movement, subject action, lighting, atmosphere and sound...'></textarea>",
     "<div id='lexUploads'></div>",
     "<div class='lex-fields'><label class='lex-field'><span class='lex-label'>RESOLUTION</span><select id='lexResolution'><option value='480p'>480p · Draft</option><option value='768p'>768p · High</option></select></label><label class='lex-field'><span class='lex-label'>ASPECT RATIO</span><select id='lexAspect'><option>16:9</option><option>9:16</option><option>1:1</option><option>4:3</option><option>3:2</option><option>21:9</option><option>4:5</option><option>3:4</option><option>2:3</option><option>5:4</option><option>9:21</option></select></label><label class='lex-field'><span class='lex-label'>DURATION</span><select id='lexDuration'><option value='5'>5 seconds</option><option value='6'>6 seconds</option><option value='8'>8 seconds</option><option value='10'>10 seconds</option><option value='12'>12 seconds</option><option value='15'>15 seconds</option></select></label></div>",
@@ -188,11 +188,11 @@ function boot(){
     if(mode==="i2va"||mode==="fl2va"){
       box.innerHTML+="<label class='lex-upload'>FIRST FRAME · REQUIRED<input id='lexFirst' type='file' accept='image/*'></label>";
     }
-    if(mode==="fl2va"){
+    if(mode==="l2va"||mode==="fl2va"){
       box.innerHTML+="<label class='lex-upload'>LAST FRAME · REQUIRED<input id='lexLast' type='file' accept='image/*'></label>";
     }
     if(mode==="ref2va"){
-      box.innerHTML+="<label class='lex-upload'>REFERENCE IMAGES / VIDEOS · UP TO 12<input id='lexRefs' type='file' accept='image/*,video/*' multiple></label>";
+      box.innerHTML+="<label class='lex-upload'>REFERENCE IMAGES / VIDEOS / AUDIO · UP TO 12<input id='lexRefs' type='file' accept='image/*,video/*,audio/*' multiple></label>";
     }
   }
   function renderHistory(){
@@ -231,14 +231,14 @@ function boot(){
     if(!token()){setStatus("Add your backend access token in Inference server connection.");return}
     if(!prompt){setStatus("Write a video prompt first.");el("lexPrompt").focus();return}
     if((mode==="i2va"||mode==="fl2va")&&!el("lexFirst").files[0]){setStatus("Choose a first-frame image.");return}
-    if(mode==="fl2va"&&!el("lexLast").files[0]){setStatus("Choose a last-frame image.");return}
+    if((mode==="l2va"||mode==="fl2va")&&!el("lexLast").files[0]){setStatus("Choose a last-frame image.");return}
     if(mode==="ref2va"&&(!el("lexRefs").files.length||el("lexRefs").files.length>12)){setStatus("Choose between 1 and 12 reference files.");return}
     var form=new FormData();
     form.append("prompt",prompt);form.append("mode",mode);
     form.append("resolution",el("lexResolution").value);form.append("aspect",el("lexAspect").value);
     form.append("duration",el("lexDuration").value);form.append("seed",String(Math.floor(Math.random()*2147483647)));
     if(mode==="i2va"||mode==="fl2va")form.append("first_image",el("lexFirst").files[0]);
-    if(mode==="fl2va")form.append("last_image",el("lexLast").files[0]);
+    if(mode==="l2va"||mode==="fl2va")form.append("last_image",el("lexLast").files[0]);
     if(mode==="ref2va")Array.from(el("lexRefs").files).forEach(function(file){form.append("reference_files",file)});
     button.disabled=true;setStatus("Submitting your generation request…");
     try{
