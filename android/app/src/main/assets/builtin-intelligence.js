@@ -101,3 +101,181 @@ return null
 }
 w.FlexoBuiltin={respond:respond};
 })(window);
+
+/* Lex Beta — in-app Pika H3 Flex workspace. Loaded with the existing Flexo UI. */
+(function(w,d){
+"use strict";
+function boot(){
+  if(d.getElementById("lexScreen"))return;
+  var css=d.createElement("style");
+  css.textContent=[
+    "#lexScreen{max-width:1120px;padding:18px 16px 34px;color:#f4f0e8}",
+    "#lexScreen .lex-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}",
+    "#lexScreen .lex-mark{display:flex;align-items:center;gap:10px}",
+    "#lexScreen .lex-mark-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#e8cda3;color:#17120c;font-size:21px;font-weight:900}",
+    "#lexScreen .lex-beta{font-size:10px;letter-spacing:.16em;border:1px solid #806c4d;color:#e8cda3;border-radius:99px;padding:5px 9px}",
+    "#lexScreen .lex-sub{color:#a69e8f;font-size:13px;margin:2px 0 0}",
+    "#lexScreen .lex-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:14px;align-items:start}",
+    "#lexScreen .lex-panel{background:linear-gradient(160deg,#19181b,#101012);border:1px solid #302b23;border-radius:18px;padding:16px;min-width:0}",
+    "#lexScreen .lex-label{display:block;font-size:12px;color:#b6aa98;margin:0 0 7px;letter-spacing:.04em}",
+    "#lexScreen .lex-prompt{width:100%;min-height:132px;resize:vertical;background:#09090b;color:#f7f2e8;border:1px solid #383127;border-radius:13px;padding:13px;font:inherit;line-height:1.5}",
+    "#lexScreen .lex-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:16px}",
+    "#lexScreen .lex-mode{border:1px solid #373127;background:#111114;border-radius:11px;padding:10px;text-align:left;color:#c8c0b3;font-size:12px;min-height:48px}",
+    "#lexScreen .lex-mode.active{border-color:#d9bd91;background:#282117;color:#f3d9b4}",
+    "#lexScreen .lex-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}",
+    "#lexScreen .lex-field select,#lexScreen .lex-field input{width:100%;background:#09090b;border:1px solid #383127;border-radius:10px;padding:10px;color:#f7f2e8;font:inherit;font-size:13px}",
+    "#lexScreen .lex-upload{display:block;border:1px dashed #62513a;border-radius:13px;padding:13px;background:#111114;margin:9px 0;color:#c9bdac;font-size:12px}",
+    "#lexScreen .lex-upload input{display:block;width:100%;margin-top:8px;font-size:12px}",
+    "#lexScreen .lex-generate{width:100%;padding:14px;border-radius:99px;background:linear-gradient(135deg,#f1dfc2,#c7a678);color:#19130b;font-weight:800;margin-top:8px}",
+    "#lexScreen .lex-generate:disabled{opacity:.45}",
+    "#lexScreen .lex-status{font-size:12px;color:#c7b18e;min-height:22px;margin-top:10px;overflow-wrap:anywhere}",
+    "#lexScreen .lex-preview{aspect-ratio:16/9;background:#08080a;border:1px solid #302b23;border-radius:14px;display:grid;place-items:center;overflow:hidden;color:#8e877b;text-align:center;padding:12px}",
+    "#lexScreen .lex-preview video{width:100%;height:100%;object-fit:contain;background:#000}",
+    "#lexScreen .lex-connect{margin-top:14px;border-top:1px solid #302b23;padding-top:12px}",
+    "#lexScreen .lex-connect summary{color:#c9b99f;font-size:12px;cursor:pointer}",
+    "#lexScreen .lex-connect input{width:100%;margin-top:8px;background:#09090b;color:#f7f2e8;border:1px solid #383127;border-radius:9px;padding:10px;font:inherit;font-size:12px}",
+    "#lexScreen .lex-note{font-size:11px;color:#898174;line-height:1.5;margin-top:10px}",
+    "#lexScreen .lex-history{display:flex;flex-direction:column;gap:8px;margin-top:12px}",
+    "#lexScreen .lex-history-item{padding:10px;border:1px solid #302b23;border-radius:11px;background:#111114;font-size:12px;color:#d6cbb9}",
+    "#lexScreen .lex-download{display:inline-block;color:#e8cda3;font-size:12px;margin-top:10px;text-decoration:underline}",
+    "@media(max-width:720px){#lexScreen .lex-layout{grid-template-columns:1fr}#lexScreen .lex-fields{grid-template-columns:repeat(2,minmax(0,1fr))}#lexScreen{padding:14px 12px 28px}}",
+    "@media(max-width:380px){#lexScreen .lex-fields{grid-template-columns:1fr}#lexScreen .lex-panel{padding:12px}}"
+  ].join("\n");
+  d.head.appendChild(css);
+
+  var section=d.createElement("section");
+  section.className="s";
+  section.id="lexScreen";
+  section.innerHTML=[
+    "<div class='lex-head'><div class='lex-mark'><div class='lex-mark-icon'>L</div><div><h1 style='margin:0;font-size:28px;letter-spacing:-.04em'>Lex</h1><p class='lex-sub'>Cinematic video creation inside Flexo AI</p></div></div><span class='lex-beta'>BETA</span></div>",
+    "<div class='lex-layout'>",
+    "<div class='lex-panel'><span class='lex-label'>GENERATION MODE</span><div class='lex-modes' id='lexModes'>",
+    "<button class='lex-mode active' data-mode='t2va'>Text to Video</button><button class='lex-mode' data-mode='i2va'>First Frame</button><button class='lex-mode' data-mode='l2va'>Last Frame</button><button class='lex-mode' data-mode='fl2va'>First + Last</button><button class='lex-mode' data-mode='ref2va'>Reference Guided</button>",
+    "</div><label class='lex-label' for='lexPrompt'>DESCRIBE YOUR VIDEO</label><textarea id='lexPrompt' class='lex-prompt' maxlength='8000' placeholder='Describe the scene, camera movement, subject action, lighting, atmosphere and sound...'></textarea>",
+    "<div id='lexUploads'></div>",
+    "<div class='lex-fields'><label class='lex-field'><span class='lex-label'>RESOLUTION</span><select id='lexResolution'><option value='480p'>480p · Draft</option><option value='768p'>768p · High</option></select></label><label class='lex-field'><span class='lex-label'>ASPECT RATIO</span><select id='lexAspect'><option>16:9</option><option>9:16</option><option>1:1</option><option>4:3</option><option>3:2</option><option>21:9</option><option>4:5</option><option>3:4</option><option>2:3</option><option>5:4</option><option>9:21</option></select></label><label class='lex-field'><span class='lex-label'>DURATION</span><select id='lexDuration'><option value='5'>5 seconds</option><option value='6'>6 seconds</option><option value='8'>8 seconds</option><option value='10'>10 seconds</option><option value='12'>12 seconds</option><option value='15'>15 seconds</option></select></label></div>",
+    "<button id='lexGenerate' class='lex-generate'>✦ Generate video</button><div id='lexStatus' class='lex-status' role='status' aria-live='polite'>Connect a GPU inference server to start generating.</div>",
+    "<details class='lex-connect'><summary>Inference server connection</summary><label class='lex-label' style='margin-top:10px'>BACKEND HTTPS URL</label><input id='lexEndpoint' type='url' placeholder='https://your-gpu-server.example.com'><label class='lex-label' style='margin-top:10px'>ACCESS TOKEN (REQUIRED)</label><input id='lexToken' type='password' autocomplete='off' placeholder='Your Lex backend access token'><p class='lex-note'>The model runs on a dedicated GPU server, not inside the phone or browser. Keep server secrets off the app. Your access token is stored only in this device’s local app storage.</p><button id='lexSaveConnection' class='lex-mode' style='width:100%;margin-top:8px'>Save connection</button><button id='lexTestConnection' class='lex-mode' style='width:100%;margin-top:8px'>Test backend connection</button></details>",
+    "</div>",
+    "<div class='lex-panel'><span class='lex-label'>YOUR VIDEO</span><div class='lex-preview' id='lexPreview'>Your generated video will appear here.</div><div id='lexVideoActions'></div><div class='lex-note'>Pika H3 Flex generates synchronized video and audio. Native output: 480p or 768p, 24 fps, 5–15 seconds.</div><div class='lex-connect'><span class='lex-label'>RECENT GENERATIONS</span><div class='lex-history' id='lexHistory'><span class='lex-note'>Your recent Lex jobs will appear here.</span></div></div></div>",
+    "</div>",
+    "<p class='lex-note' style='margin:14px 2px'>Powered by Pika H3 Flex · Open-weight model integration. Model adapters and MiniMax-H3 base components have separate license terms. See the repository’s lex-backend/README.md.</p>"
+  ].join("");
+  var screens=d.querySelector(".screens");
+  if(!screens)return;
+  screens.appendChild(section);
+
+  function addNav(container){
+    if(!container||container.querySelector("[data-id='lexScreen']"))return;
+    var b=d.createElement("button");
+    b.type="button";b.dataset.id="lexScreen";b.setAttribute("aria-label","Lex Beta");b.title="Lex Beta";
+    b.innerHTML="<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M4 16.5 10 4l3 6 2-3 5 9.5H4Z'/><path d='M8 16.5h8'/></svg><span>Lex</span>";
+    var tools=container.querySelector("[data-id='tools']");
+    if(tools&&tools.nextSibling)container.insertBefore(b,tools.nextSibling);else container.appendChild(b);
+  }
+  addNav(d.getElementById("sn"));addNav(d.getElementById("tb"));
+  if(location.hash==="#lexScreen"&&typeof w.go==="function")w.go("lexScreen");
+
+  var mode="t2va",currentVideoUrl=null,history=[];
+  try{history=JSON.parse(localStorage.getItem("flexo_lex_history")||"[]")}catch(e){}
+  function el(id){return d.getElementById(id)}
+  function endpoint(){return (localStorage.getItem("flexo_lex_endpoint")||"").replace(/\/+$/,"")}
+  function token(){return localStorage.getItem("flexo_lex_token")||""}
+  function auth(){var h={};if(token())h.Authorization="Bearer "+token();return h}
+  function setStatus(t){el("lexStatus").textContent=t}
+  function uploads(){
+    var box=el("lexUploads");box.innerHTML="";
+    if(mode==="i2va"||mode==="fl2va"){
+      box.innerHTML+="<label class='lex-upload'>FIRST FRAME · REQUIRED<input id='lexFirst' type='file' accept='image/*'></label>";
+    }
+    if(mode==="l2va"||mode==="fl2va"){
+      box.innerHTML+="<label class='lex-upload'>LAST FRAME · REQUIRED<input id='lexLast' type='file' accept='image/*'></label>";
+    }
+    if(mode==="ref2va"){
+      box.innerHTML+="<label class='lex-upload'>REFERENCE IMAGES / VIDEOS / AUDIO · UP TO 12<input id='lexRefs' type='file' accept='image/*,video/*,audio/*' multiple></label>";
+    }
+  }
+  function renderHistory(){
+    var box=el("lexHistory");box.innerHTML="";
+    if(!history.length){box.textContent="Your recent Lex jobs will appear here.";return}
+    history.slice(0,8).forEach(function(item){
+      var row=d.createElement("div");row.className="lex-history-item";
+      row.textContent=(item.status==="completed"?"✓ ":"• ")+item.prompt.slice(0,86);
+      box.appendChild(row);
+    });
+  }
+  el("lexModes").addEventListener("click",function(e){
+    var b=e.target.closest("[data-mode]");if(!b)return;
+    mode=b.dataset.mode;
+    el("lexModes").querySelectorAll(".lex-mode").forEach(function(x){x.classList.toggle("active",x===b)});
+    uploads();
+  });
+  uploads();renderHistory();
+  el("lexEndpoint").value=endpoint();el("lexToken").value=token();
+  el("lexSaveConnection").addEventListener("click",function(){
+    var value=el("lexEndpoint").value.trim();
+    if(value&&!/^https:\/\//i.test(value)){setStatus("Use an HTTPS backend URL.");return}
+    localStorage.setItem("flexo_lex_endpoint",value);
+    localStorage.setItem("flexo_lex_token",el("lexToken").value.trim());
+    setStatus(value?"Backend connection settings saved on this device.":"Backend URL cleared.");
+  });
+  el("lexTestConnection").addEventListener("click",async function(){
+    var base=endpoint();if(!base){setStatus("Enter and save your backend HTTPS URL first.");return}
+    setStatus("Testing backend connection…");
+    try{var response=await fetch(base+"/health",{headers:auth()});var data=await response.json();if(!response.ok||!data.ok)throw new Error("Backend health check failed");setStatus("Connected · "+data.model+" inference service is reachable.");}
+    catch(error){setStatus("Backend connection failed: "+error.message)}
+  });
+  el("lexGenerate").addEventListener("click",async function(){
+    var base=endpoint(),prompt=el("lexPrompt").value.trim(),button=el("lexGenerate");
+    if(!base){setStatus("Add your GPU backend HTTPS URL in Inference server connection.");return}
+    if(!token()){setStatus("Add your backend access token in Inference server connection.");return}
+    if(!prompt){setStatus("Write a video prompt first.");el("lexPrompt").focus();return}
+    if((mode==="i2va"||mode==="fl2va")&&!el("lexFirst").files[0]){setStatus("Choose a first-frame image.");return}
+    if((mode==="l2va"||mode==="fl2va")&&!el("lexLast").files[0]){setStatus("Choose a last-frame image.");return}
+    if(mode==="ref2va"&&(!el("lexRefs").files.length||el("lexRefs").files.length>12)){setStatus("Choose between 1 and 12 reference files.");return}
+    var form=new FormData();
+    form.append("prompt",prompt);form.append("mode",mode);
+    form.append("resolution",el("lexResolution").value);form.append("aspect",el("lexAspect").value);
+    form.append("duration",el("lexDuration").value);form.append("seed",String(Math.floor(Math.random()*2147483647)));
+    if(mode==="i2va"||mode==="fl2va")form.append("first_image",el("lexFirst").files[0]);
+    if(mode==="l2va"||mode==="fl2va")form.append("last_image",el("lexLast").files[0]);
+    if(mode==="ref2va")Array.from(el("lexRefs").files).forEach(function(file){form.append("reference_files",file)});
+    button.disabled=true;setStatus("Submitting your generation request…");
+    try{
+      var response=await fetch(base+"/v1/jobs",{method:"POST",headers:auth(),body:form});
+      var data=await response.json();if(!response.ok)throw new Error(data.detail||"Could not create generation job");
+      setStatus("Job queued. Waiting for the GPU…");poll(data.id,base,button,prompt);
+    }catch(error){setStatus("Connection error: "+error.message);button.disabled=false}
+  });
+  async function poll(id,base,button,prompt){
+    var started=Date.now();
+    async function tick(){
+      try{
+        var response=await fetch(base+"/v1/jobs/"+encodeURIComponent(id),{headers:auth()});
+        var data=await response.json();if(!response.ok)throw new Error(data.detail||"Could not read job status");
+        if(data.status==="queued"){setStatus("Queued · waiting for GPU capacity…")}
+        else if(data.status==="running"){setStatus("Generating video and synchronized audio…")}
+        else if(data.status==="failed"){throw new Error(data.error||"Generation failed")}
+        else if(data.status==="completed"){
+          setStatus("Video generated successfully.");
+          var videoResponse=await fetch(base+data.video_url,{headers:auth()});
+          if(!videoResponse.ok)throw new Error("Video is ready but could not be downloaded from the backend.");
+          var blob=await videoResponse.blob();if(currentVideoUrl)URL.revokeObjectURL(currentVideoUrl);
+          currentVideoUrl=URL.createObjectURL(blob);
+          var video=d.createElement("video");video.controls=true;video.playsInline=true;video.src=currentVideoUrl;
+          el("lexPreview").innerHTML="";el("lexPreview").appendChild(video);
+          var link=d.createElement("a");link.className="lex-download";link.href=currentVideoUrl;link.download="lex-"+id+".mp4";link.textContent="Download MP4";
+          el("lexVideoActions").innerHTML="";el("lexVideoActions").appendChild(link);
+          history.unshift({id:id,prompt:prompt,status:"completed",createdAt:Date.now()});history=history.slice(0,8);
+          try{localStorage.setItem("flexo_lex_history",JSON.stringify(history))}catch(e){}
+          renderHistory();button.disabled=false;return;
+        }
+      }catch(error){setStatus("Lex error: "+error.message);button.disabled=false;return}
+      if(Date.now()-started>2700000){setStatus("This job is taking longer than expected. Check the backend job status.");button.disabled=false;return}
+      setTimeout(tick,5000);
+    }
+    tick();
+  }
+}
+if(d.readyState==="loading")d.addEventListener("DOMContentLoaded",boot);else boot();
+})(window,document);

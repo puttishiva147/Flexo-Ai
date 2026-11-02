@@ -49,3 +49,12 @@ The Android manifest declares microphone permission for voice input and vibratio
 - Local data is not encrypted by an app-level database in this build. Use Android device security and keep exported backups private.
 
 See `docs/PROJECT_GAP_AUDIT.md` for the verified implementation status and remaining work.
+
+
+## Lex Beta — video generation
+
+Lex is an in-app video-generation workspace added to the existing Flexo interface. It is not a separate app or website. The UI supports text-to-video, first-frame image-to-video, first-and-last-frame generation, and reference-guided generation. It connects to the self-hosted Pika H3 Flex inference service in `lex-backend/`.
+
+**Important:** the GitHub branch contains the integration code, not a running GPU service. Generation will remain unavailable until the backend is deployed on a compatible NVIDIA GPU host, exposed over HTTPS, and its endpoint is configured in Lex. The official Pika H3 Flex package documents H100 80GB tested configurations and roughly 210 GB of base model components; lower-resource machines should not be assumed to work.
+
+Model adapters and MiniMax-H3 base components are subject to the MiniMax H3 Community License Agreement. The inference code has a separate Apache-2.0 license. Review `lex-backend/README.md` and upstream notices before commercial use.
