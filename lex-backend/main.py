@@ -28,7 +28,9 @@ app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", 
 
 
 def authorize(value: Optional[str]):
-    if API_KEY and value != "Bearer " + API_KEY:
+    if not API_KEY:
+        raise HTTPException(status_code=503, detail="Lex backend is not configured: set LEX_API_KEY")
+    if value != "Bearer " + API_KEY:
         raise HTTPException(status_code=401, detail="Invalid Lex backend access token")
 
 
@@ -53,6 +55,8 @@ def run_job(job_id: str, folder: Path, prompt: str, mode: str, resolution: str, 
         command += ["--first-image", str(first_path)]
     if last_path:
         command += ["--last-image", str(last_path)]
+    if os.getenv("LEX_CPU_OFFLOAD", "false").lower() in {"1", "true", "yes"}:
+        command.append("--cpu-offload")
     for kind, path in refs:
         command += ["--ref", kind + ":" + str(path)]
     with lock:
