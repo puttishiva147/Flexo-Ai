@@ -542,6 +542,7 @@ function hero(id){document.body.classList.toggle("lock",!!id);$("splash").classL
 })();
 
 /* chat */
+function flexoNotify(title,message){try{if(window.FlexoAndroid&&typeof window.FlexoAndroid.showNotification==="function")window.FlexoAndroid.showNotification(String(title||"Flexo AI"),String(message||"Your task is complete."))}catch(_){}}
 function rc(){var m=$("ms");m.innerHTML="";var c=chat();$("cm").textContent="";
 if(!c||!c.m.length){m.appendChild(S.cfg.welcomed?home():guide());return}
 c.m.forEach(function(x){var d=E("div","m"+(x.r=="user"?" u":""));if(x.r!="user")d.appendChild(E("small","","Flexo"));if(!x.err&&!x.c&&busy){var rd=x.st=="read",w=E("div","wk"),li=E("img",rd?"look":"pulse");li.src=ICON;li.alt="Flexo is working";w.appendChild(li);var cp=E("span","",rd?"Searching your local knowledge…":"Preparing a local response…");cp.id="cap";w.appendChild(cp);d.appendChild(w)}else if(x.err){d.appendChild(sad(x.err))}else{if(x.att&&x.att.length){var ar=E("div");ar.style.cssText="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px";x.att.forEach(function(a){if(a.k=="img"){if(a.t){var im=E("img","chat-attachment-image");im.alt=a.n||"Attached image";im.decoding="async";im.src=a.t;im.onerror=function(){var fallback=E("span","chip","Preview unavailable: "+(a.n||"image"));if(this.parentNode)this.parentNode.replaceChild(fallback,this)};ar.appendChild(im)}else{ar.appendChild(E("span","chip","Image: "+(a.n||"attached")))}}else{ar.appendChild(E("span","chip",a.n))}});d.appendChild(ar)}d.appendChild(E("span","tx",x.c));if(busy&&x===c.m[c.m.length-1]){var bb=E("img","bob");bb.src=ICON;bb.alt="Flexo is writing";d.appendChild(bb)}}
@@ -654,6 +655,7 @@ function send(t){
  answer=sanitizeAssistantResponse(answer);
  c.m.push({r:"assistant",c:answer,src:[]});
  save();rc();
+ flexoNotify("Flexo AI reply ready","Your response is ready in Flexo AI.");
 }
 $("f").onsubmit=function(e){e.preventDefault();if(busy)return;var q=$("q"),v=q.value;q.value="";if(v.trim()||PA.length){var sb=$("sb");sb.classList.add("pop");setTimeout(function(){sb.classList.remove("pop")},450)}send(v)};$("sb").onclick=function(e){if(busy){e.preventDefault();if(ab&&Date.now()-t0>700)ab.abort()}};
 var PA=[];
@@ -862,6 +864,7 @@ $("voiceButton").onclick=function(){var b=this;b.classList.add("listening");if(w
  var test=$("sendTestNotification");if(test)test.onclick=function(){notice("Flexo notifications are working","This is a test notification from your app.");showNotifications()};
  var input=$("imf");if(input)input.addEventListener("cancel",function(){var st=$("knowledgeImportStatus");if(st)st.textContent="No file selected. Choose an export to import."});
  renderNotices();
+ try{if(window.FlexoAndroid&&typeof window.FlexoAndroid.requestNotificationPermission==="function")window.FlexoAndroid.requestNotificationPermission()}catch(_){}
 })();
 
 </script><script src="flexo-ai-studio.js"></script></body></html>
