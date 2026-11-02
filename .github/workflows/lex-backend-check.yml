@@ -25,4 +25,6 @@ jobs:
         run: python -m compileall -q lex-backend
       - name: Import FastAPI application
         working-directory: lex-backend
+        env:
+          LEX_DATA_DIR: ${{ runner.temp }}/lex-data
         run: python -c "import main; assert main.app.title == 'Lex Video Inference API'"
