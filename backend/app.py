@@ -26,9 +26,9 @@ class ChatRequest(BaseModel):
 class VideoRequest(BaseModel):
     prompt: str=Field(min_length=1,max_length=3000)
     mode: str=Field(pattern="^(text|image)$")
-    image_data_url: str | None=None
-    duration_seconds: int=Field(default=5,ge=1,le=10)
-    resolution: str=Field(default="720p",pattern="^(480p|720p)$")
+    image_data_url: str | None=Field(default=None,max_length=12000000)
+    duration_seconds: int=Field(default=5,ge=5,le=5)
+    resolution: str=Field(default="720p",pattern="^720p$")
 
 @app.get("/api/health")
 async def health()->dict[str,Any]:
