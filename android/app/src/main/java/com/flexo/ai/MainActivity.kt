@@ -1,6 +1,10 @@
 package com.flexo.ai
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.Manifest
 import android.content.pm.PackageManager
 import android.speech.RecognitionListener
@@ -33,6 +37,8 @@ class MainActivity : Activity() {
     private val fileChooserRequestCode = 4107
     private val exportRequestCode = 4108
     private val voiceRequestCode = 4109
+    private val notificationRequestCode = 4110
+    private val notificationChannelId = "flexo_updates"
     private var speechRecognizer: SpeechRecognizer? = null
 
     private inner class FlexoBridge {
@@ -53,6 +59,33 @@ class MainActivity : Activity() {
                 }
             } catch (_: Exception) {
                 "ERROR:PDF_READ_FAILED"
+            }
+        }
+
+
+        @JavascriptInterface
+        fun requestNotificationPermission() {
+            runOnUiThread {
+                if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), notificationRequestCode)
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun showNotification(title: String, message: String) {
+            runOnUiThread {
+                createNotificationChannel()
+                if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return@runOnUiThread
+                val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val launch = packageManager.getLaunchIntentForPackage(packageName)
+                val pending = launch?.let { PendingIntent.getActivity(this@MainActivity, 0, it, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE) }
+                val builder = if (Build.VERSION.SDK_INT >= 26) Notification.Builder(this@MainActivity, notificationChannelId) else Notification.Builder(this@MainActivity)
+                val notification = builder.setSmallIcon(android.R.drawable.ic_dialog_info)
+                    .setContentTitle(title.take(80)).setContentText(message.take(180))
+                    .setStyle(Notification.BigTextStyle().bigText(message.take(500)))
+                    .setAutoCancel(true).setContentIntent(pending).build()
+                manager.notify((System.currentTimeMillis() % Int.MAX_VALUE).toInt(), notification)
             }
         }
 
@@ -106,6 +139,7 @@ class MainActivity : Activity() {
     @Suppress("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createNotificationChannel()
         window.statusBarColor = android.graphics.Color.rgb(8, 8, 10)
         window.navigationBarColor = android.graphics.Color.rgb(8, 8, 10)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -158,6 +192,16 @@ class MainActivity : Activity() {
         }
         setContentView(web)
         web.loadUrl("file:///android_asset/index.html")
+    }
+
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(notificationChannelId, "Flexo AI updates", NotificationManager.IMPORTANCE_DEFAULT).apply {
+                description = "Chat replies and completed Flexo tasks"
+            }
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
+        }
     }
 
     private fun voiceCallback(text: String?, error: String?) {
