@@ -36,7 +36,7 @@ The workflow builds a debug APK. It is not a production-signed release.
 - **No image-understanding model is bundled.** Images can be attached/stored in a conversation, but the app cannot interpret their contents offline.
 - **PDF extraction is not implemented.** Convert PDF text to TXT/MD before importing.
 - **No production account, sync service, remote database, or deployed Flexo gateway is configured yet.** App data remains on the device unless the user explicitly connects the gateway. Export backups regularly.
-- **Video generation requires a separate GPU worker.** The app and gateway contracts are included, but the Wan model weights/runtime and a hosted GPU worker are not. Do not treat video generation as live until the worker is deployed and tested.
+- **Video generation requires a separate GPU worker.** The app, FastAPI gateway and a private GPU worker adapter for the official Wan2.2 TI2V-5B inference CLI are included. The actual Wan model weights/runtime still need to be installed on a GPU host, and the worker must be deployed and tested before video generation is live.
 - **The Quick AI overlay/backend described in older setup notes is not present in the current source tree.** Do not assume overlay controls or a deployed `/api/quick-ai` service exist.
 - **Storage uses WebView localStorage.** Large imports can hit device/browser quota limits; failed writes should be treated as unsuccessful.
 - **Device acceptance is still required.** CI compilation does not prove the app works on every Android/OEM version.
