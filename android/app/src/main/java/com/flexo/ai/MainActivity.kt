@@ -153,6 +153,9 @@ class MainActivity : Activity() {
         web = WebView(this)
         web.setBackgroundColor(android.graphics.Color.rgb(8, 8, 10))
         web.settings.javaScriptEnabled = true
+        web.settings.setSupportZoom(false)
+        web.settings.builtInZoomControls = false
+        web.settings.displayZoomControls = false
         web.settings.domStorageEnabled = true
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = true
