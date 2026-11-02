@@ -1,6 +1,7 @@
 package com.flexo.ai
 
 import android.app.Activity
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
