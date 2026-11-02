@@ -7,7 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN ln -sf /usr/bin/python3.12 /usr/local/bin/python && ln -sf /usr/bin/python3.12 /usr/local/bin/python3
 WORKDIR /opt
-RUN git clone https://github.com/Pika-Labs/Pika-H3-Flex.git /opt/Pika-H3-Flex
+ARG PIKA_H3_FLEX_COMMIT=06bd434ce0b6e287e6f6c4058420460f47ba031b
+RUN git clone https://github.com/Pika-Labs/Pika-H3-Flex.git /opt/Pika-H3-Flex \
+    && git -C /opt/Pika-H3-Flex checkout "$PIKA_H3_FLEX_COMMIT"
 WORKDIR /opt/Pika-H3-Flex
 RUN python -m pip install --break-system-packages -r requirements.txt \
     && python tools/apply_diffusers_patches.py \
