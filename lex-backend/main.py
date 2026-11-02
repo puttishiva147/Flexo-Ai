@@ -17,12 +17,15 @@ MODEL_REPO = os.getenv("MODEL_REPO", "Pika-Labs/Pika-H3-Flex")
 MODEL_REVISION = os.getenv("MODEL_REVISION", "0ddf55ad7067ca1e76812253bd7b4600df87f759")
 API_KEY = os.getenv("LEX_API_KEY", "")
 MAX_UPLOAD = int(os.getenv("LEX_MAX_UPLOAD_BYTES", str(100 * 1024 * 1024)))
+MAX_JOBS = int(os.getenv("LEX_MAX_QUEUED_JOBS", "4"))
 ALLOWED_ASPECTS = {"21:9", "16:9", "3:2", "4:3", "5:4", "1:1", "4:5", "3:4", "2:3", "9:16", "9:21"}
+VIDEO_EXTENSIONS = {".mp4", ".mov", ".webm", ".mkv"}
+AUDIO_EXTENSIONS = {".wav", ".mp3", ".m4a", ".aac", ".flac", ".ogg"}
 jobs = {}
 lock = threading.Lock()
 pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="lex-pika")
 
-app = FastAPI(title="Lex Video Inference API", version="0.1.0")
+app = FastAPI(title="Lex Video Inference API", version="0.2.0")
 origins = [x.strip() for x in os.getenv("LEX_CORS_ORIGINS", "*").split(",") if x.strip()]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["Authorization", "Content-Type"])
 
@@ -34,10 +37,19 @@ def authorize(value: Optional[str]):
         raise HTTPException(status_code=401, detail="Invalid Lex backend access token")
 
 
+def safe_suffix(upload: UploadFile, default: str = ".bin") -> str:
+    suffix = Path(upload.filename or "").suffix.lower()
+    if not suffix or len(suffix) > 10 or not suffix[1:].isalnum():
+        return default
+    return suffix
+
+
 async def save_upload(upload: UploadFile, destination: Path):
     data = await upload.read(MAX_UPLOAD + 1)
     if len(data) > MAX_UPLOAD:
-        raise HTTPException(status_code=413, detail="Upload exceeds the configured size limit")
+        raise HTTPException(status_code=413, detail="Each uploaded file must be smaller than the configured limit")
+    if not data:
+        raise HTTPException(status_code=400, detail="An uploaded file is empty")
     destination.write_bytes(data)
     return destination
 
@@ -71,6 +83,9 @@ def run_job(job_id: str, folder: Path, prompt: str, mode: str, resolution: str, 
             raise RuntimeError((completed.stderr or completed.stdout or "Pika inference failed")[-5000:])
         with lock:
             jobs[job_id].update(status="completed", video_url="/v1/jobs/" + job_id + "/video", finished_at=time.time())
+    except subprocess.TimeoutExpired:
+        with lock:
+            jobs[job_id].update(status="failed", error="Generation exceeded the 40-minute server timeout.", finished_at=time.time())
     except Exception as exc:
         with lock:
             jobs[job_id].update(status="failed", error=str(exc)[-3000:], finished_at=time.time())
@@ -78,7 +93,7 @@ def run_job(job_id: str, folder: Path, prompt: str, mode: str, resolution: str, 
 
 @app.get("/health")
 def health():
-    return {"ok": True, "service": "lex-pika-h3-flex", "model": MODEL_REPO, "revision": MODEL_REVISION}
+    return {"ok": True, "service": "lex-pika-h3-flex", "model": MODEL_REPO, "revision": MODEL_REVISION, "auth_configured": bool(API_KEY)}
 
 
 @app.post("/v1/jobs")
@@ -106,29 +121,55 @@ async def create_job(
         raise HTTPException(status_code=400, detail="This mode requires a first-frame image")
     if mode in {"l2va", "fl2va"} and last_image is None:
         raise HTTPException(status_code=400, detail="This mode requires a last-frame image")
+    if mode != "ref2va" and reference_files:
+        raise HTTPException(status_code=400, detail="Reference files are only accepted in reference-guided mode")
     if mode == "ref2va" and not reference_files:
         raise HTTPException(status_code=400, detail="Reference mode requires at least one image or video")
     if len(reference_files) > 12:
         raise HTTPException(status_code=400, detail="At most 12 reference files are accepted")
 
+    with lock:
+        active = sum(1 for item in jobs.values() if item["status"] in {"queued", "running"})
+        if active >= MAX_JOBS:
+            raise HTTPException(status_code=429, detail="Lex generation queue is full. Try again shortly.")
+
     job_id = secrets.token_urlsafe(12)
     folder = ROOT / job_id
     folder.mkdir(parents=True, exist_ok=False)
     (folder / "prompt.txt").write_text(prompt, encoding="utf-8")
-    first_path = await save_upload(first_image, folder / ("first-frame" + (Path(first_image.filename or "image.png").suffix or ".png"))) if first_image else None
-    last_path = await save_upload(last_image, folder / ("last-frame" + (Path(last_image.filename or "image.png").suffix or ".png"))) if last_image else None
-    refs = []
-    for index, upload in enumerate(reference_files):
-        suffix = Path(upload.filename or "reference.png").suffix or ".bin"
-        content_type = upload.content_type or ""
-        kind = "video" if content_type.startswith("video/") or suffix.lower() in {".mp4", ".mov", ".webm"} else "image"
-        path = await save_upload(upload, folder / ("reference-" + str(index) + suffix))
-        refs.append((kind, path))
-
-    with lock:
-        jobs[job_id] = {"id": job_id, "status": "queued", "created_at": time.time(), "prompt": prompt, "mode": mode, "resolution": resolution, "aspect": aspect, "duration": duration, "seed": seed}
-    pool.submit(run_job, job_id, folder, prompt, mode, resolution, aspect, duration, seed, first_path, last_path, refs)
-    return {"id": job_id, "status": "queued"}
+    try:
+        first_path = await save_upload(first_image, folder / ("first-frame" + safe_suffix(first_image, ".png"))) if first_image else None
+        last_path = await save_upload(last_image, folder / ("last-frame" + safe_suffix(last_image, ".png"))) if last_image else None
+        refs = []
+        image_count = video_count = audio_count = 0
+        for index, upload in enumerate(reference_files):
+            suffix = safe_suffix(upload)
+            content_type = (upload.content_type or "").lower()
+            if content_type.startswith("video/") or suffix in VIDEO_EXTENSIONS:
+                kind = "video"; video_count += 1
+            elif content_type.startswith("audio/") or suffix in AUDIO_EXTENSIONS:
+                kind = "audio"; audio_count += 1
+            elif content_type.startswith("image/") or suffix in {".png", ".jpg", ".jpeg", ".webp", ".bmp"}:
+                kind = "image"; image_count += 1
+            else:
+                raise HTTPException(status_code=415, detail="Reference files must be images, videos, or audio")
+            path = await save_upload(upload, folder / ("reference-" + str(index) + suffix))
+            refs.append((kind, path))
+        if mode == "ref2va":
+            if image_count > 9 or video_count > 3 or audio_count > 3:
+                raise HTTPException(status_code=400, detail="Reference limits: 9 images, 3 videos, and 3 standalone audio files")
+            if image_count + video_count == 0:
+                raise HTTPException(status_code=400, detail="At least one image or video reference is required; audio-only reference generation is not supported")
+        with lock:
+            jobs[job_id] = {"id": job_id, "status": "queued", "created_at": time.time(), "prompt": prompt, "mode": mode, "resolution": resolution, "aspect": aspect, "duration": duration, "seed": seed}
+        pool.submit(run_job, job_id, folder, prompt, mode, resolution, aspect, duration, seed, first_path, last_path, refs)
+        return {"id": job_id, "status": "queued"}
+    except Exception:
+        for child in folder.iterdir():
+            if child.is_file():
+                child.unlink()
+        folder.rmdir()
+        raise
 
 
 @app.get("/v1/jobs/{job_id}")
@@ -137,7 +178,7 @@ def job_status(job_id: str, authorization: Optional[str] = Header(None)):
     with lock:
         job = jobs.get(job_id)
         if not job:
-            raise HTTPException(status_code=404, detail="Job not found")
+            raise HTTPException(status_code=404, detail="Job not found (jobs are cleared if the inference service restarts)")
         return dict(job)
 
 
