@@ -1,10 +1,11 @@
-name: Lex backend validation
+name: Lex backend and UI validation
 
 on:
   push:
     branches: [feature/lex-pika-h3-flex]
     paths:
       - 'lex-backend/**'
+      - 'android/app/src/main/assets/builtin-intelligence.js'
       - '.github/workflows/lex-backend-check.yml'
   workflow_dispatch:
 
@@ -19,12 +20,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Install API dependencies
         run: python -m pip install -r lex-backend/requirements.txt
       - name: Compile backend
         run: python -m compileall -q lex-backend
+      - name: Validate Lex frontend JavaScript syntax
+        run: node --check android/app/src/main/assets/builtin-intelligence.js
       - name: Import FastAPI application
         working-directory: lex-backend
         env:
           LEX_DATA_DIR: ${{ runner.temp }}/lex-data
-        run: python -c "import main; assert main.app.title == 'Lex Video Inference API'"
+        run: python -c "import main; assert main.app.title == 'Lex Video Inference API'; assert main.MODEL_REVISION == '0ddf55ad7067ca1e76812253bd7b4600df87f759'"
+      - name: Verify supported generation modes are wired into the app
+        run: |
+          grep -q "data-mode='t2va'" android/app/src/main/assets/builtin-intelligence.js
+          grep -q "data-mode='i2va'" android/app/src/main/assets/builtin-intelligence.js
+          grep -q "data-mode='l2va'" android/app/src/main/assets/builtin-intelligence.js
+          grep -q "data-mode='fl2va'" android/app/src/main/assets/builtin-intelligence.js
+          grep -q "data-mode='ref2va'" android/app/src/main/assets/builtin-intelligence.js
+          grep -q 'pika-h3-pro' lex-backend/main.py
