@@ -5,6 +5,8 @@ on:
     branches: [main, feature/built-in-intelligence-ui, feature/ai-chat-knowledge-video-studio]
     paths:
       - 'android/**'
+      - 'backend/**'
+      - 'video-worker/**'
       - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
@@ -40,7 +42,7 @@ jobs:
         with:
           gradle-version: '8.9'
       - name: Validate Flexo gateway Python syntax
-        run: python -m py_compile backend/app.py
+        run: python -m py_compile backend/app.py video-worker/app.py
       - name: Set up Node.js for client syntax check
         uses: actions/setup-node@v4
         with:
