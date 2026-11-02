@@ -18,3 +18,7 @@ Set the values from `.env.example` in the server environment. Never commit `.env
 The GPU worker is separate because a multi-billion-parameter video model cannot run inside Android WebView or a serverless function. Deploy the selected open-weight model on a GPU host and implement the worker contract (`POST /jobs`, `GET /jobs/{id}`). Set `VIDEO_WORKER_URL` and `VIDEO_WORKER_TOKEN`. The model name and host remain server-side and are never returned to the app.
 
 This repository does not include model weights, a GPU runtime, or a paid inference endpoint. Video generation remains unavailable until the worker is deployed and configured. Review model and dependency licences before commercial use.
+
+
+## Current tested preset
+The current app/worker contract is intentionally restricted to 5-second 720p output. The longer-duration UI options were removed until GPU runtime and memory use can be load-tested on the target host.
