@@ -174,6 +174,7 @@ function boot(){
     if(tools&&tools.nextSibling)container.insertBefore(b,tools.nextSibling);else container.appendChild(b);
   }
   addNav(d.getElementById("sn"));addNav(d.getElementById("tb"));
+  if(location.hash==="#lexScreen"&&typeof w.go==="function")w.go("lexScreen");
 
   var mode="t2va",currentVideoUrl=null,history=[];
   try{history=JSON.parse(localStorage.getItem("flexo_lex_history")||"[]")}catch(e){}
